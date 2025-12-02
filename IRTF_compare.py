@@ -4,17 +4,18 @@ from astropy.io import fits
 from astropy.table import Table
 from scipy.interpolate import interp1d
 from matplotlib.patches import Rectangle
+from scipy.optimize import curve_fit
 
 
 class IRTFCompare:
 
     def __init__(self):
 
-        self.irtf_path = "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Fry_Sromovsky\\plnt_Neptune.fits"
-        self.neptune_path = "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\MOV_Neptune1_SCI_IFU_PAPER_READY.fits"
-        #self.neptune_path = "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\MOV_Neptune_SCI_IFU_PAPER_READY_NEW.fits"
-        self.hst_path = "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\HST_STIS\\hst_hasp_8661_stis_neptune_o65h\\hst_8661_stis_neptune_sg230l_o65ha4_cspec.fits"
-        self.hst2_path = "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\HST_STIS\\hst_hasp_8661_stis_neptune_o65h\\hst_8661_stis_neptune_sg230l_o65ha5_cspec.fits"
+        self.irtf_path = "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Fry_Sromovsky\\plnt_Neptune.fits"
+        self.neptune_path = "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Post_Molecfit\\MOV_Neptune_SCI_IFU_PAPER_READY.fits"
+        #self.neptune_path = "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\MOV_Neptune_SCI_IFU_PAPER_READY_NEW.fits"
+        self.hst_path = "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\HST_STIS\\hst_hasp_8661_stis_neptune_o65h\\hst_8661_stis_neptune_sg230l_o65ha4_cspec.fits"
+        self.hst2_path = "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\HST_STIS\\hst_hasp_8661_stis_neptune_o65h\\hst_8661_stis_neptune_sg230l_o65ha5_cspec.fits"
 
     def closest_index(self, array, value):
         # Filter out NaN values and get the indices of non-NaN values
@@ -120,12 +121,112 @@ class IRTFCompare:
         irtf_interp_func = interp1d(irtf_wave, irtf_flux, kind='linear', bounds_error=False, fill_value='extrapolate')
         irtf_interp_flux = irtf_interp_func(xsh_wave)
 
-        # === Scale IRTF to XShooter using overlapping region (1.0–1.2 µm) ===
-        low = self.closest_index(xsh_wave, 1.0)
-        high = self.closest_index(xsh_wave, 1.2)
-        scale_irtf_to_xsh = np.nanmedian(xsh_flux[low:high] / irtf_interp_flux[low:high])
-        irtf_flux_scaled = irtf_flux * scale_irtf_to_xsh
-        irtf_interp_flux_scaled = irtf_interp_flux * scale_irtf_to_xsh
+        # --- 1. Define wavelength region for slope matching
+        slope_lower = 1.1
+        i_slope_lower = self.closest_index(xsh_wave, slope_lower)
+        fit_wave_full = xsh_wave[i_slope_lower:]
+        fit_flux_xsh_full = xsh_flux[i_slope_lower:]
+        fit_flux_irtf_full = irtf_interp_flux[i_slope_lower:]
+
+        # Remove NaNs
+        mask = (~np.isnan(fit_wave_full) &
+                ~np.isnan(fit_flux_xsh_full) &
+                ~np.isnan(fit_flux_irtf_full))
+        fit_wave_full = fit_wave_full[mask]
+        fit_flux_xsh_full = fit_flux_xsh_full[mask]
+        fit_flux_irtf_full = fit_flux_irtf_full[mask]
+
+        # --- 2. Bin into ~10 points
+        n_bins = 10
+        bins = np.linspace(fit_wave_full.min(), fit_wave_full.max(), n_bins + 1)
+        binned_wave = 0.5 * (bins[:-1] + bins[1:])  # midpoints
+
+        binned_flux_xsh = np.zeros(n_bins)
+        binned_flux_irtf = np.zeros(n_bins)
+
+        for i in range(n_bins):
+            in_bin = (fit_wave_full >= bins[i]) & (fit_wave_full < bins[i + 1])
+            binned_flux_xsh[i] = np.nanmean(fit_flux_xsh_full[in_bin])
+            binned_flux_irtf[i] = np.nanmean(fit_flux_irtf_full[in_bin])
+
+        # Remove bins that are empty (NaNs)
+        valid_xsh = ~np.isnan(binned_flux_xsh)
+        valid_irtf = ~np.isnan(binned_flux_irtf)
+
+        # --- 3. Fit linear slopes on binned data
+        m_xsh, b_xsh = np.polyfit(binned_wave[valid_xsh], binned_flux_xsh[valid_xsh], 1)
+        m_irtf, b_irtf = np.polyfit(binned_wave[valid_irtf], binned_flux_irtf[valid_irtf], 1)
+
+        # --- 4. Compute correction and apply
+        xsh_fit_line = m_xsh * xsh_wave + b_xsh
+
+        fig, ax = plt.subplots(1,1)
+        ax.plot(xsh_wave[i_slope_lower:], irtf_interp_flux[i_slope_lower:], linewidth=0.5, color='blue', label='IRTF')
+        ax.plot(binned_wave, binned_flux_irtf, 'o', color='cornflowerblue')
+        ax.plot(xsh_wave[i_slope_lower:], xsh_flux[i_slope_lower:], linewidth=0.5, color='rebeccapurple', label='xsh-before')
+        # Apply the wavelength-dependent scaling to XShooter flux
+        xsh_flux = xsh_flux - xsh_fit_line
+        ax.plot(xsh_wave[i_slope_lower:], xsh_flux[i_slope_lower:], linewidth=0.5, color='mediumpurple', label='xsh-after')
+        ax.plot(binned_wave, binned_flux_xsh, 'o', color='plum')
+        ax.set_ylim(bottom=0, top=1.e-12)
+        plt.show()
+
+        fig, ax = plt.subplots(1,1)
+        ax.plot(xsh_wave, irtf_interp_flux, linewidth=0.5, color='blue', label='IRTF')
+        ax.plot(binned_wave, binned_flux_irtf, 'o', color='cornflowerblue')
+        ax.plot(xsh_wave, xsh_flux, linewidth=0.5, color='rebeccapurple', label='xsh')
+        ax.plot(xsh_wave, xsh_flux*9, linewidth=0.5, color='mediumpurple', label='xsh-scaled')
+        ax.plot(binned_wave, binned_flux_xsh, 'o', color='plum')
+        ax.set_ylim(bottom=0, top=1.e-11)
+        plt.show()
+
+        # --- 3. Peak scaling in the 0.81–0.84 µm region (same as before)
+        # Define Gaussian function
+        def gaussian(x, a, x0, sigma):
+            return a * np.exp(-(x - x0) ** 2 / (2 * sigma ** 2))
+
+        # --- 1. Define region of interest
+        lower_bound = 0.81
+        upper_bound = 0.85
+        i_lower = self.closest_index(xsh_wave, lower_bound)
+        i_upper = self.closest_index(xsh_wave, upper_bound)
+
+        region_wave = xsh_wave[i_lower:i_upper + 1]
+        region_xsh = xsh_flux[i_lower:i_upper + 1]
+        region_irtf = irtf_interp_flux[i_lower:i_upper + 1]
+
+        # Mask out NaNs
+        mask_xsh = ~np.isnan(region_wave) & ~np.isnan(region_xsh)
+        mask_irtf = ~np.isnan(region_wave) & ~np.isnan(region_irtf)
+        region_wave_xsh = region_wave[mask_xsh]
+        region_wave_irtf = region_wave[mask_irtf]
+        region_xsh = region_xsh[mask_xsh]
+        region_irtf = region_irtf[mask_irtf]
+
+        # --- 2. Initial guesses for Gaussian parameters
+        # amplitude, center, sigma
+        guess_xsh = [np.nanmax(region_xsh), region_wave_xsh[np.nanargmax(region_xsh)], 0.01]
+        guess_irtf = [np.nanmax(region_irtf), region_wave_irtf[np.nanargmax(region_irtf)], 0.01]
+
+        # --- 3. Fit Gaussian to both datasets
+        popt_xsh, _ = curve_fit(gaussian, region_wave_xsh, region_xsh, p0=guess_xsh)
+        popt_irtf, _ = curve_fit(gaussian, region_wave_irtf, region_irtf, p0=guess_irtf)
+
+        # popt_* = [amplitude, center, sigma]
+        amp_xsh = popt_xsh[0]
+        amp_irtf = popt_irtf[0]
+
+        # --- 4. Compute scaling factor from fitted amplitudes
+        scale_factor = amp_irtf / amp_xsh
+
+        # --- 5. Apply scaling to entire XSH spectrum
+        xsh_flux = xsh_flux * scale_factor
+
+        fig, ax = plt.subplots(1,1)
+        ax.plot(xsh_wave, irtf_interp_flux, linewidth=0.5, color='rebeccapurple', label='IRTF')
+        ax.plot(xsh_wave, xsh_flux, linewidth=0.5, color='blue', label='xsh-before')
+        ax.set_ylim(bottom=0, top=1.e-11)
+        plt.show()
 
         # === Scale HST to XSH using ~0.31–0.32 µm ===
         hst_interp_func = interp1d(hst_wave, hst_flux, kind='linear', bounds_error=False, fill_value='extrapolate')
@@ -164,38 +265,43 @@ class IRTFCompare:
         hst2_residuals = np.full_like(xsh_flux, np.nan)
 
         # Fill only the overlapping regions
-        irtf_residuals[irtf_overlap] = irtf_interp_flux_scaled[irtf_overlap] - xsh_flux[irtf_overlap]
+        irtf_residuals[irtf_overlap] = irtf_interp_flux[irtf_overlap] - xsh_flux[irtf_overlap]
         hst_residuals[hst_overlap] = hst_interp_flux_scaled[hst_overlap] - xsh_flux[hst_overlap]
         hst2_residuals[hst2_overlap] = hst2_interp_flux_scaled[hst2_overlap] - xsh_flux[hst2_overlap]
 
         fig, (ax1, ax2) = plt.subplots(2, 1,
-                                       gridspec_kw={'height_ratios': [2, 1], 'hspace': 0}, sharex=True)
+                                       gridspec_kw={'height_ratios': [3, 1], 'hspace': 0}, sharex=True)
 
         self.shade_mask_regions(ax1, xsh_wave, mask_tel, color='lightgray', alpha=0.3)
         self.shade_mask_regions(ax1, xsh_wave, mask_wrn, color='gray', alpha=0.3)
         self.shade_mask_regions(ax2, xsh_wave, mask_tel, color='lightgray', alpha=0.3)
         self.shade_mask_regions(ax2, xsh_wave, mask_wrn, color='gray', alpha=0.3)
 
-        ax1.plot(irtf_wave, irtf_flux_scaled, lw=0.5, color='blue', label='IRTF')
-        ax1.plot(xsh_wave, xsh_flux, lw=0.5, color='rebeccapurple', label='X-Shooter')
-        ax1.plot(hst_wave, hst_flux_scaled, lw=0.5, color='red', label='HST')
-        ax1.plot(hst2_wave, hst2_flux_scaled, lw=0.5, color='orchid', label='HST2')
-        ax1.legend(loc='upper left')
-        ax1.set_ylim(bottom=-0.1, top=1.25)
-        ax1.set_xscale('log')
+        ax1.plot(irtf_wave, irtf_flux, lw=0.5, color='rebeccapurple', label='IRTF')
+        ax1.plot(xsh_wave, xsh_flux, lw=0.5, color='blue', label='X-Shooter')
+        #ax1.plot(hst_wave, hst_flux_scaled, lw=0.5, color='red', label='HST')
+        #ax1.plot(hst2_wave, hst2_flux_scaled, lw=0.5, color='orchid', label='HST2')
+        ax1.legend(loc='upper right')
+        #ax1.set_ylim(bottom=-0.1, top=1.25)
+        ax1.set_ylim(bottom=0.0, top=0.65e-11)
+        #ax1.set_xlim(left=0.85, right=1.0)
+        #ax1.set_xscale('log')
 
-        ax2.plot(xsh_wave, irtf_residuals, lw=0.5, color='blue')
-        ax2.plot(xsh_wave, hst_residuals, lw=0.5, color='red')
-        ax2.plot(xsh_wave, hst2_residuals, lw=0.5, color='orchid')
-        ax2.set_ylim(bottom=-0.5, top=0.5)
-        ax2.set_xscale('log')
+        ax2.plot(xsh_wave, irtf_residuals, lw=0.5, color='rebeccapurple')
+        #ax2.plot(xsh_wave, hst_residuals, lw=0.5, color='red')
+        #ax2.plot(xsh_wave, hst2_residuals, lw=0.5, color='orchid')
+        #ax2.set_ylim(bottom=-0.5, top=0.5)
+        #ax2.set_xlim(left=0.85, right=1.0)
+        #ax2.set_xscale('log')
 
         ax2.set_xlabel(r"Wavelength ($\mu$m)")
         ax1.set_ylabel("Relative Flux")
         ax2.set_ylabel(r"$\Delta$")
         #plt.xlim(np.nanmin(xsh_wave), np.nanmax(xsh_wave))
-        plt.xlim(0.25, np.nanmax(hst_wave))
+        #plt.xlim(0.25, np.nanmax(hst_wave))
+        plt.xlim(0.5, np.nanmax(xsh_wave))
         plt.tight_layout()
+        plt.savefig("C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\IRTF.png")
         plt.show()
 
 
