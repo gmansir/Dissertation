@@ -11,177 +11,673 @@ class MolecfitPrep:
         self.object = object
         all_paths = {
             'neptune1': {
-                'UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_1\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
-                'VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_1\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
-                'NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_1\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
-                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_1\\MOV_Neptune_DiskIntegrated_UVB.fits",
-                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_1\\MOV_Neptune_DiskIntegrated_VIS.fits",
-                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_1\\MOV_Neptune_DiskIntegrated_NIR.fits",
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_1\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_1\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_1\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_1\\MOV_Neptune_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_1\\MOV_Neptune_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_1\\MOV_Neptune_DiskIntegrated_NIR.fits",
             },
             'neptune2': {
-                'UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_2\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
-                'VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_2\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
-                'NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_2\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
-                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_2\\MOV_Neptune_DiskIntegrated_UVB.fits",
-                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_2\\MOV_Neptune_DiskIntegrated_VIS.fits",
-                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_2\\MOV_Neptune_DiskIntegrated_NIR.fits",
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_2\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_2\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_2\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_2\\MOV_Neptune_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_2\\MOV_Neptune_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_2\\MOV_Neptune_DiskIntegrated_NIR.fits",
             },
             'neptune3': {
-                'UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_3\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
-                'VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_3\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
-                'NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_3\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
-                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_3\\MOV_Neptune_DiskIntegrated_UVB.fits",
-                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_3\\MOV_Neptune_DiskIntegrated_VIS.fits",
-                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_3\\MOV_Neptune_DiskIntegrated_NIR.fits",
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_3\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_3\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_3\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_3\\MOV_Neptune_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_3\\MOV_Neptune_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_3\\MOV_Neptune_DiskIntegrated_NIR.fits",
             },
             'neptune4': {
-                'UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_4\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
-                'VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_4\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
-                'NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_4\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
-                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_4\\MOV_Neptune_DiskIntegrated_UVB.fits",
-                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_4\\MOV_Neptune_DiskIntegrated_VIS.fits",
-                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\Offset_4\\MOV_Neptune_DiskIntegrated_NIR.fits",
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_4\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_4\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_4\\MOV_Neptune_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_4\\MOV_Neptune_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_4\\MOV_Neptune_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\Offset_4\\MOV_Neptune_DiskIntegrated_NIR.fits",
             },
             'feige-110': {
-                'UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\FEIGE-110\\FEIGE-110_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_UVB.fits",
-                'VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\FEIGE-110\\FEIGE-110_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_VIS.fits",
-                'NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\FEIGE-110\\FEIGE-110_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_NIR.fits",
-                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\FEIGE-110\\MOV_FEIGE-110_DiskIntegrated_UVB.fits",
-                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\FEIGE-110\\MOV_FEIGE-110_DiskIntegrated_VIS.fits",
-                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\Neptune-Check\\FEIGE-110\\MOV_FEIGE-110_DiskIntegrated_NIR.fits",
-            }
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\FEIGE-110\\FEIGE-110_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\FEIGE-110\\FEIGE-110_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\FEIGE-110\\FEIGE-110_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\FEIGE-110\\MOV_FEIGE-110_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\FEIGE-110\\MOV_FEIGE-110_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Neptune\\FEIGE-110\\MOV_FEIGE-110_DiskIntegrated_NIR.fits",
+            },
+            'uranus1': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_1\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_1\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_1\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_1\\MOV_Uranus_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_1\\MOV_Uranus_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_1\\MOV_Uranus_DiskIntegrated_NIR.fits",
+            },
+            'uranus2': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_2\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_2\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_2\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_2\\MOV_Uranus_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_2\\MOV_Uranus_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_2\\MOV_Uranus_DiskIntegrated_NIR.fits",
+            },
+            'uranus3': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_3\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_3\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_3\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_3\\MOV_Uranus_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_3\\MOV_Uranus_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_3\\MOV_Uranus_DiskIntegrated_NIR.fits",
+            },
+            'uranus4': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_4\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_4\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_4\\MOV_Uranus_2_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_4\\MOV_Uranus_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_4\\MOV_Uranus_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Offset_4\\MOV_Uranus_DiskIntegrated_NIR.fits",
+            },
+            'gd71': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\GD71\\GD71_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\GD71\\GD71_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\GD71\\GD71_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\GD71\\MOV_GD71_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\GD71\\MOV_GD71_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\GD71\\MOV_GD71_DiskIntegrated_NIR.fits",
+            },
+            'titan1': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_1\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_1\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_1\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_1\\MOV_Titan_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_1\\MOV_Titan_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_1\\MOV_Titan_DiskIntegrated_NIR.fits",
+            },
+            'titan2': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_2\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_2\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_2\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_2\\MOV_Titan_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_2\\MOV_Titan_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_2\\MOV_Titan_DiskIntegrated_NIR.fits",
+            },
+            'titan3': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_3\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_3\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_3\\MOV_Titan_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_3\\MOV_Titan_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_3\\MOV_Titan_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Titan\\Offset_3\\MOV_Titan_DiskIntegrated_NIR.fits",
+            },
+            'saturn1': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_1\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_1\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_1\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_1\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_1\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_1\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn3': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_3\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_3\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_3\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_3\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_3\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_3\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn4': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_4\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_4\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_4\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_4\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_4\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_4\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn5': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_5\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_5\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_5\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_5\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_5\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_5\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn6': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_6\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_6\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_6\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_6\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_6\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_6\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn7': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_7\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_7\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_7\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_7\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_7\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_7\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn8': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_8\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_8\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_8\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_8\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_8\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_8\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn9': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_9\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_9\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_9\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_9\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_9\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_9\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn10': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_10\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_10\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_10\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_10\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_10\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_10\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn11': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_11\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_11\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_11\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_11\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_11\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_11\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn12': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_12\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_12\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_12\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_12\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_12\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_12\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn13': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_13\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_13\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_13\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_13\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_13\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_13\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn14': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_14\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_14\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_14\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_14\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_14\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_14\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn16': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_16\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_16\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_16\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_16\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_16\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_16\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn17': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_17\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_17\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_17\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_17\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_17\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_17\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn18': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_18\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_18\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_18\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_18\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_18\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_18\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn19': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_19\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_19\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_19\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_19\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_19\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_19\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn20': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_20\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_20\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_20\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_20\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_20\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_20\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn21': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_21\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_21\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_21\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_21\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_21\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_21\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn22': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_22\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_22\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_22\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_22\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_22\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_22\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn23': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_23\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_23\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_23\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_23\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_23\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_23\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn24': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_24\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_24\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_24\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_24\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_24\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_24\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn25': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_25\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_25\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_25\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_25\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_25\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_25\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'saturn26': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_26\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_26\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_26\\MOV_Saturn_SCI_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_26\\MOV_Saturn_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_26\\MOV_Saturn_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Offset_26\\MOV_Saturn_DiskIntegrated_NIR.fits",
+            },
+            'ltt7987': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\LTT7987\\LTT7987_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\LTT7987\\LTT7987_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\LTT7987\\LTT7987_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\LTT7987\\MOV_LTT7987_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\LTT7987\\MOV_LTT7987_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\LTT7987\\MOV_LTT7987_DiskIntegrated_NIR.fits",
+            },
+            'hip09': {
+                'UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\LTT7987\\LTT7987_onoff_IFU_FLUX_IFU_MERGE3D_DATA_OBJ_UVB.fits",
+                'VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Standard2\\Hip095318_TELL_IFU_TELL_IFU_MERGE3D_DATA_OBJ_VIS.fits",
+                'NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Standard2\\Hip095318_TELL_IFU_TELL_IFU_MERGE3D_DATA_OBJ_NIR.fits",
+                'DI_UVB': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Standard2\\MOV_Hip095318_DiskIntegrated_UVB.fits",
+                'DI_VIS': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Standard2\\MOV_Hip095318_DiskIntegrated_VIS.fits",
+                'DI_NIR': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Standard2\\MOV_Hip095318_DiskIntegrated_NIR.fits",
+            },
+
         }
         self.file_paths = all_paths[object]
 
-    def combine_disk_integrated_spectra(self, object_list, arm):
+    def combine_disk_integrated_spectra(self, object_list, arm, clip_sigma=3.0):
+        """
+        Combine multiple disk-integrated spectra into a single, high-quality spectrum.
+        Performs weighted combination using variance, robust clipping of outliers, and
+        returns a properly propagated variance array.
 
+        Parameters
+        ----------
+        object_list : list
+            List of object identifiers.
+        arm : str
+            XSHOOTER arm ('UVB', 'VIS', 'NIR').
+        clip_sigma : float, optional
+            Sigma threshold for robust outlier rejection (default 3.0).
+
+        Returns
+        -------
+        out_flux : np.ndarray
+            Combined flux spectrum (1D, length Nlam).
+        out_var : np.ndarray
+            Combined variance spectrum (1D, length Nlam).
+        N_used : np.ndarray
+            Number of spectra contributing at each wavelength.
+        """
         spectra = []
+        errs_list = []
+        quals_list = []
+        airm_starts = []
+        airm_ends = []
+        exptimes = []
 
+        # --- Load DI spectra if possible ---
         for obj in object_list:
             try:
-                path = MolecfitPrep(obj).file_paths[f'DI_{arm}']
-                if not os.path.exists(path):
+                path = MolecfitPrep(obj).file_paths.get(f'DI_{arm}')
+                if path is None or not os.path.exists(path):
                     continue
                 with fits.open(path) as hdul:
                     data = hdul[0].data
+                    errs = hdul[1].data
+                    qual = hdul[2].data
+                    header = hdul[0].header
+                    n_lambda = header["NAXIS1"]
+                    airm_start = header["ESO TEL AIRM START"]
+                    airm_end = header["ESO TEL AIRM END"]
+                    exptime = header["EXPTIME"]
+                    wave = np.zeros(n_lambda)
+                    for i in range(n_lambda):
+                        wave[i] = (i + 1 - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
                     if data is None or not np.any(data):
                         continue
                     spectra.append(data)
+                    errs_list.append(errs)
+                    quals_list.append(qual)
+                    airm_starts.append(airm_start)
+                    airm_ends.append(airm_end)
+                    exptimes.append(exptime)
             except Exception as e:
-                print(f"Skipping {obj} due to error: {e}")
+                print(f"Skipping {obj} DI_{arm} due to error: {e}")
                 continue
 
+        # --- Fallback to post-xpipe summed spectra ---
         if len(spectra) == 0:
-            print(f"No valid DI spectra found for arm {arm}. Falling back to post xshooter pipeline cubes.")
+            print(f"No valid DI spectra found for arm {arm}. Falling back to post-xpipe cubes.")
             for obj in object_list:
                 try:
-                    path = MolecfitPrep(obj).file_paths[arm]
-                    if not os.path.exists(path):
+                    path = MolecfitPrep(obj).file_paths.get(arm)
+                    if path is None or not os.path.exists(path):
                         continue
                     with fits.open(path) as hdul:
                         cube = hdul[0].data
+                        errs = hdul[1].data
+                        qual = hdul[2].data
+                        n_lambda = header["NAXIS3"]
+                        wave = np.zeros(n_lambda)
+                        for i in range(n_lambda):
+                            wave[i] = (i + 1 - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
                         if cube is None or not np.any(cube):
                             continue
                         summed = np.nansum(cube, axis=(1, 2))
+                        summed_errs = np.sqrt(np.nansum(errs ** 2, axis=(1, 2)))
                         spectra.append(summed)
+                        errs_list.append(summed_errs)
+                        quals_list.append(qual)
                 except Exception as e:
-                    print(f"Skipping post_xpipe for {obj} due to error: {e}")
+                    print(f"Skipping post-xpipe {obj} for {arm} due to error: {e}")
                     continue
 
         if len(spectra) == 0:
-            raise ValueError(f"No valid spectra found for arm {arm} in either DI or post_xpipe.")
+            raise ValueError(f"No valid spectra found for arm {arm} in either DI or post-xpipe.")
 
-        combined = np.nansum(np.array(spectra), axis=0)
-        return combined
+        # --- Stack spectra, variances, and quality flags ---
+        flux = np.vstack(spectra)  # (Nexp, Nlam)
+        errors = np.vstack(errs_list)  # (Nexp, Nlam)
+        quals = np.vstack(quals_list)  # (Nexp, Nlam), integer mask
 
-    def plot_check(self, wavefile, image_path):
+        # A pixel is usable if:
+        #   - finite flux and error
+        #   - error > 0
+        #   - qual == 0
+        mask = np.isfinite(flux) & np.isfinite(errors) & (errors > 0) & (quals == 0)
 
-        with fits.open(wavefile) as hdul:
-            header = hdul[0].header
+        Nexp, Nlam = flux.shape
+        out_flux = np.full(Nlam, np.nan)
+        out_var = np.full(Nlam, np.nan)
+        N_used = np.zeros(Nlam, dtype=int)
+        out_qual = np.zeros(Nlam, dtype=int)  # new quality mask for combined spectrum
 
-            # Wavelength axis
-            N = header["NAXIS3"]
-            wave = np.zeros(N)
-            for i in range(N):
-                wave[i] = (i + 1 - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
+        for i in range(Nlam):
+            m = mask[:, i]
 
-        with fits.open(image_path) as hdul:
-            data = hdul[0].data
+            if m.sum() == 0:
+                # Nothing usable: carry forward flag
+                out_qual[i] = 1
+                continue
 
-            print(f"Data shape: {data.shape}")  # Confirm shape
+            f = flux[m, i]
+            s = errors[m, i]
 
-            # Plot
-            plt.figure(figsize=(10, 5))
-            plt.plot(wave, data, lw=0.5)
-            plt.xlabel("Wavelength")
-            plt.ylabel("Summed Flux")
-            plt.title("Collapsed Spectrum Check")
-            plt.grid(True)
-            plt.tight_layout()
-            plt.show()
+            # Robust median + MAD
+            med = np.nanmedian(f)
+            mad = 1.4826 * np.nanmedian(np.abs(f - med))
+            scat = np.sqrt(s ** 2 + mad ** 2)
 
-    def plot_check_2(self):
-        # Open FITS file
-        hdul = fits.open(self.file_paths['NIR'])
-        header = hdul[0].header
-        data = hdul[0].data
+            # Outlier rejection
+            r = (f - med) / scat
+            keep = np.abs(r) <= clip_sigma
 
-        print("Cube shape:", data.shape)
+            if np.sum(keep) == 0:
+                # Fallback: use median, still mark as "usable"
+                out_flux[i] = med
+                out_var[i] = mad ** 2 if mad > 0 else np.nanmedian(s ** 2)
+                N_used[i] = 1
+                continue
 
-        # Extract wavelength axis info
-        N = header["NAXIS3"]
-        CRPIX = header["CRPIX3"]  # reference pixel
-        CDELT = header["CDELT3"]  # increment per pixel
-        CRVAL = header["CRVAL3"]  # reference value
+            # Weighted mean
+            w = 1.0 / (s[keep] ** 2)
+            out_flux[i] = np.nansum(w * f[keep]) / np.nansum(w)
+            out_var[i] = max(1.0 / np.nansum(w), mad ** 2)
+            N_used[i] = np.sum(keep)
 
-        wave = (np.arange(N) - (CRPIX - 1)) * CDELT + CRVAL
-        print("Wavelength range:", wave[0], "to", wave[-1])
 
-        # Collapse cube spatially (sum over Y and X)
-        spectrum = data.sum(axis=(1, 2))
+        airm_start = np.nanmedian(airm_starts)
+        airm_end = np.nanmedian(airm_ends)
+        exptime = np.nanmedian(exptimes)
 
-        # Plot
-        plt.figure(figsize=(10, 4))
-        plt.plot(wave, spectrum, label='Summed Spectrum')
-        plt.xlabel('Wavelength [Angstrom]')
-        plt.ylabel('Total Flux')
-        plt.title('Summed Spectrum from Cube')
-        plt.grid(True)
-        plt.legend()
+        # Return combined quality flag alongside everything else
+        return wave, out_flux, out_var, N_used, out_qual, airm_start, airm_end, exptime
+
+    def plot_check(self, olist, combined_flux, wave, combined_qual, arm='ARM', clip_sigma=3.0):
+        """
+        Visualize the combination of spectra.
+
+        Parameters
+        ----------
+        olist : list of np.ndarray
+            List of 1D spectra (spatially integrated) used for combination.
+        combined_flux : np.ndarray
+            Final combined flux spectrum.
+        wave : np.ndarray
+            Wavelength array corresponding to the spectra.
+        arm : str, optional
+            XSHOOTER arm for labeling.
+        clip_sigma : float, optional
+            Clipping sigma for display purposes.
+        """
+
+        nspec = len(olist)
+        if nspec == 0:
+            print("No spectra to visualize.")
+            return
+
+        # --- Setup figure ---
+        fig, axes = plt.subplots(2, 1, figsize=(12, 6), sharex=True, gridspec_kw={'height_ratios': [2, 1]})
+
+        # --- Plot each spectrum as it is added ---
+        for i, offset in enumerate(olist):
+            offset_path = MolecfitPrep(offset).file_paths.get(f'DI_{arm}')
+            with fits.open(offset_path) as hdul:
+                spec = hdul[0].data
+                qual = hdul[2].data
+            qual_mask = (qual == 0)
+            axes[0].plot(wave[qual_mask], spec[qual_mask], alpha=0.5, label=f"Offset {i+1}")
+
+        axes[0].plot(wave, combined_flux, color='rebeccapurple', lw=1.5, label='Combined spectrum')
+        axes[0].set_ylabel("Flux")
+        axes[0].set_ylim(bottom=0.0, top=(2.0*np.nanpercentile(combined_flux, 98)))
+        axes[0].set_title(f"{arm} arm: Individual spectra and combined")
+        axes[0].legend(fontsize=8)
+        axes[0].grid(True)
+
+        # --- Residuals ---
+        qual_mask = (combined_qual == 0)
+        for i, offset in enumerate(olist):
+            offset_path = MolecfitPrep(offset).file_paths.get(f'DI_{arm}')
+            with fits.open(offset_path) as hdul:
+                spec = hdul[0].data
+            resid = spec - combined_flux
+            axes[1].plot(wave[qual_mask], resid[qual_mask], alpha=0.5)
+
+        axes[1].axhline(0, color='rebeccapurple', lw=1.0, linestyle='--')
+        axes[1].set_xlabel("Wavelength")
+        axes[1].set_ylabel("Residuals")
+        axes[1].grid(True)
+
         plt.tight_layout()
         plt.show()
 
-    def make_molecfit_ready(self, post_xpipe, DI_file):
-        self.post_xpipe = post_xpipe
-        self.DI_file = DI_file
+    def make_molecfit_ready(self, post_xpipe_path, combined_flux, combined_var, combined_qual, airm_start, airm_end, exptime):
+        """
+        Prepare a MOLECFIT-ready FITS file by copying the post-xshooter pipeline output,
+        then replacing the FLUX and ERR/VAR HDUs with repeated combined spectra.
 
-        # Step 1: Read the DI file
-        with fits.open(self.DI_file) as hdulist_DI:
-            di_data = hdulist_DI[0].data  # shape ~ (28000,)
+        Parameters
+        ----------
+        post_xpipe_path : str
+            Path to the post-XSHOOTER pipeline FITS file.
+        combined_flux : np.ndarray
+            1D combined spectrum from `combine_disk_integrated_spectra`.
+        combined_var : np.ndarray
+            1D variance array corresponding to `combined_flux`.
+        """
+        # --- parameters you can tune ---
+        INFLATION_FACTOR = 4.0  # inflate variance for replaced pixels to be conservative
+        REPLACED_QUAL_FLAG = 8  # bit flag to mark pixels we replaced (choose unused bit)
+        REPLACED_FAR_FLAG = 16  # additional bit for "far from nearest good pixel"
+        GAP_LIMIT = 20  # pixels; if replaced pixel is farther from any good pixel than this, treat more conservatively
 
-        # Step 2: Open post_xpipe file
-        HDUlist_xpipe = fits.open(self.post_xpipe)
-        nHDUlist = HDUlist_xpipe.copy()
+        # --- prepare ---
+        Nlam = combined_flux.shape[0]
+        x = np.arange(Nlam)
 
-        # Step 3: Get the shape of the flux HDU and overwrite the data
-        flux_data = nHDUlist['FLUX'].data  # shape like (28000, 28, 3)
-        shape = flux_data.shape
-        print("The shape of the flux data from the post_xpipeline file is", shape)
-        if di_data.shape[0] != shape[0]:
-            raise ValueError(f"DI spectrum length {di_data.shape[0]} doesn't match flux cube length {shape[0]}.")
+        # robust mask of "base-good" pixels used to build the interpolant:
+        # choose pixels that are finite, non-negative and have finite non-negative variance
+        base_good = np.isfinite(combined_flux) & np.isfinite(combined_var) & (combined_flux >= 0) & (combined_var >= 0)
 
-        new_flux = np.tile(di_data[:, np.newaxis, np.newaxis], (1, shape[1], shape[2]))
-        nHDUlist['FLUX'].data = new_flux
+        # if no base-good pixels exist, we can't interpolate sensibly -> fallback
+        if not base_good.any():
+            # mark everything bad and set safe defaults (caller should handle this as fatal)
+            combined_qual[:] |= 2  # keep previous flags but set a fatal bit (tunable)
+            combined_flux[:] = 0.0
+            fallback_var = np.nanmedian(errors) ** 2 if (
+                        'errors' in globals() and np.isfinite(np.nanmedian(errors))) else 1.0
+            combined_var[:] = fallback_var * 100.0
+            print(
+                "WARNING: no non-negative finite pixels available to interpolate from; filled with zeros and large variance.")
+        else:
+            # interpolate flux and var from base_good pixels
+            interp_flux = np.interp(x, x[base_good], combined_flux[base_good])
 
-        #Bonus step: Replace the Object card in the header
-        hdr = nHDUlist[0].header
-        if hdr.get('OBJECT', '').strip().upper() == 'STD, FLUX':
-            hdr['OBJECT'] = self.object.upper()
+            # prepare variance array for interpolation: ensure finite positive values at base_good positions
+            var_good = np.array(combined_var, copy=True)
+            # replace non-finite or negative variances at base_good positions with median
+            valid_var_vals = var_good[base_good]
+            median_var = np.nanmedian(valid_var_vals[np.isfinite(valid_var_vals)]) if np.any(
+                np.isfinite(valid_var_vals)) else 1.0
+            var_good[~np.isfinite(var_good) | (var_good <= 0)] = median_var
+            interp_var = np.interp(x, x[base_good], var_good[base_good])
 
-        # Step 4: Write the output
-        fname = self.post_xpipe.replace('.fits', '_MOLECFIT_READY.fits').replace("MERGE3D", "MERGE1D")
-        nHDUlist.writeto(fname, output_verify="fix+warn", overwrite=True, checksum=True)
-        HDUlist_xpipe.close()
+            # build replace mask: any finite negative OR non-finite value
+            replace_mask = (np.isfinite(combined_flux) & (combined_flux < 0)) | (~np.isfinite(combined_flux))
+
+            # If you *only* want to replace negatives and not NaNs, change above accordingly.
+
+            # Apply replacements for all matched pixels (regardless of existing qual)
+            if np.any(replace_mask):
+                # assign interpolated flux, but force non-negative (clip to 0)
+                new_vals = interp_flux[replace_mask]
+                new_vals = np.where(new_vals < 0.0, 0.0, new_vals)
+                combined_flux[replace_mask] = new_vals
+
+                # assign variance: use interpolated variance * inflation factor; ensure positive finite
+                new_vars = interp_var[replace_mask]
+                # replace any non-finite or <=0 new_vars with median_var
+                new_vars[~np.isfinite(new_vars) | (new_vars <= 0)] = median_var
+                combined_var[replace_mask] = new_vars * INFLATION_FACTOR
+
+                # flag replacements (OR preserves existing flags)
+                combined_qual[replace_mask] |= REPLACED_QUAL_FLAG
+
+            # handle "far from nearest good pixel" conservative inflation
+            good_idx = np.nonzero(base_good)[0]
+            pos = np.searchsorted(good_idx, x)
+            left_idx = good_idx[np.clip(pos - 1, 0, good_idx.size - 1)]
+            right_idx = good_idx[np.clip(pos, 0, good_idx.size - 1)]
+            dist = np.minimum(np.abs(x - left_idx), np.abs(right_idx - x))
+            far_mask = (dist > GAP_LIMIT) & replace_mask
+            if np.any(far_mask):
+                # more aggressive inflation and flagging for extrapolated replacements
+                combined_var[far_mask] *= 10.0
+                combined_qual[far_mask] |= REPLACED_FAR_FLAG
+
+            # final safety: force any remaining negatives (should be none) to zero and mark them
+            still_neg = combined_flux < 0
+            if np.any(still_neg):
+                combined_flux[still_neg] = 0.0
+                combined_var[still_neg] = np.where(np.isfinite(combined_var[still_neg]) & (combined_var[still_neg] > 0),
+                                                   combined_var[still_neg] * INFLATION_FACTOR,
+                                                   median_var * INFLATION_FACTOR)
+                combined_qual[still_neg] |= REPLACED_QUAL_FLAG
+
+        # diagnostic output
+        n_replaced = np.sum((combined_qual & REPLACED_QUAL_FLAG) != 0)
+        n_replaced_far = np.sum((combined_qual & REPLACED_FAR_FLAG) != 0)
+        n_neg_after = np.sum(combined_flux < 0)
+        print(f"patched {int(n_replaced)} pixels (including {int(n_replaced_far)} far/extrapolated); negatives remaining: {int(n_neg_after)}")
+
+        # --- Open post-xpipe file and copy HDUList ---
+        hdulist = fits.open(post_xpipe_path)  # don't use 'with' here
+        new_hdulist = fits.HDUList([hdu.copy() for hdu in hdulist])
+
+        # --- Identify flux and variance HDUs ---
+        if 'FLUX' not in new_hdulist or 'ERRS' not in new_hdulist:
+            raise ValueError("Post-xpipe file must contain 'FLUX' and 'ERRS' HDUs.")
+
+        flux_hdu = new_hdulist['FLUX']
+        err_hdu = new_hdulist['ERRS']
+        qual_hdu = new_hdulist['QUAL']
+
+        # --- Check length consistency ---
+        nlam = flux_hdu.data.shape[0]
+        if combined_flux.shape[0] != nlam or combined_var.shape[0] != nlam:
+            raise ValueError(
+                f"Combined spectrum length {combined_flux.shape[0]} or variance length {combined_var.shape[0]} "
+                f"does not match the number of wavelength slices in post-xpipe ({nlam})."
+            )
+
+        # --- Get spatial shape ---
+        ny, nx = flux_hdu.data.shape[1], flux_hdu.data.shape[2]
+
+        # --- Create 3D cubes by repeating the combined spectrum along spatial dimensions ---
+        flux_cube = np.tile(combined_flux[:, np.newaxis, np.newaxis], (1, ny, nx))
+        var_cube = np.tile(combined_var[:, np.newaxis, np.newaxis], (1, ny, nx))
+        qual_cube = np.tile(combined_qual[:, np.newaxis, np.newaxis], (1, ny, nx))
+
+        # --- Replace HDU data ---
+        flux_hdu.data = flux_cube
+        err_hdu.data = var_cube
+        qual_hdu.data = qual_cube
+
+        # --- Optional: update header OBJECT card ---
+        hdr0 = new_hdulist[0].header
+        if hdr0.get('OBJECT', '').strip().upper() == 'STD, FLUX':
+            hdr0['OBJECT'] = getattr(self, 'object', 'UNKNOWN').upper()
+        hdr0['ESO TEL AIRM START'] = airm_start
+        hdr0['ESO TEL AIRM END'] = airm_end
+        hdr0['EXPTIME'] = exptime
+
+        # --- Write MOLECFIT_READY output ---
+        out_fname = post_xpipe_path.replace('.fits', '_MOLECFIT_READY.fits').replace("MERGE3D", "MERGE1D")
+        new_hdulist.writeto(out_fname, output_verify="fix+warn", overwrite=True, checksum=True)
+        print(f"MOLECFIT-ready file written to {out_fname}")
 
     def make_molecfit_ready_old(self, post_xpipe, DI_file):
         self.post_xpipe = post_xpipe
@@ -239,62 +735,55 @@ class MolecfitPrep:
         HDUlist_xpipe.close()
         print('File Written')
 
-    def final_check(self):
-
-        fname = self.post_xpipe.replace('.fits', '_MOLECFIT_READY.fits').replace("MERGE3D", "MERGE1D")
-        print(f"Checking {fname}:")
-        with fits.open(fname) as hdul:
-            header = hdul[0].header
-
-            # Wavelength axis
-            N = header["NAXIS1"]
-            wave = np.zeros(N)
-            for i in range(N):
-                wave[i] = (i + 1 - header["CRPIX1"]) * header["CDELT1"] + header["CRVAL1"]
-
-            # Data axis
-            data = hdul[0].data
-            print(f"Data shape: {data.shape}")  # Confirm shape
-
-            print(f"Are any NaNs in the data: {np.isnan(data).any()}")
-            print(f"Are any infs in the data: {np.isinf(data).any()}")
-            print(f"min: {np.min(data)}, max: {np.max(data)}")
-
-            # Plot
-            plt.figure(figsize=(10, 5))
-            plt.plot(wave, data, lw=0.5)
-            plt.xlabel("Wavelength")
-            plt.ylabel("Summed Flux")
-            plt.title("Final Check")
-            plt.grid(True)
-            plt.tight_layout()
-            plt.show()
-
 
 if __name__ == "__main__":
 
-    object_list = ['feige-110']
+    #object_list = ['neptune1', 'neptune2', 'neptune3', 'neptune4']
+    #object_list = ['feige-110']
+    #object_list = ['gd71']
+    object_list = ['uranus1', 'uranus2', 'uranus3', 'uranus4']
+    #object_list = ['titan1', 'titan2', 'titan3']
+    #object_list = ['saturn7', 'saturn12', 'saturn14',
+    #               'saturn17', 'saturn18', 'saturn19', 'saturn20', 'saturn21', 'saturn22',
+    #               'saturn23', 'saturn24']#, 'saturn25', 'saturn26']
+    #object_list = ['ltt7987']
+    #object_list = ['hip09']
     arm = ['UVB', 'VIS', 'NIR']
+    #object_list = ['neptune4']
+    #arm = ['NIR']
 
     for a in arm:
         if len(object_list) >= 2:
             prep = MolecfitPrep(object_list[0])
-
             print(f"Combining images for {a} arm")
-            combined_spectrum = prep.combine_disk_integrated_spectra(object_list, a)
-            fits.writeto(f"combined_DI_{a}.fits", combined_spectrum, overwrite=True)
-
-            prep.plot_check(prep.file_paths[a], f"combined_DI_{a}.fits")
-
+            wave, combined_spectrum, combined_var, n_used, combined_qual, airm_start, airm_end, exptime = prep.combine_disk_integrated_spectra(object_list, a)
+            prep.plot_check(object_list, combined_spectrum, wave, combined_qual, a)
             print(f"Writing molecfit ready fits file for {a} arm")
-            prep.make_molecfit_ready(prep.file_paths[a], f"combined_DI_{a}.fits")
-            #prep.final_check()
-
+            prep.make_molecfit_ready(prep.file_paths[a], combined_spectrum, combined_var, combined_qual, airm_start, airm_end, exptime)
         else:
             prep = MolecfitPrep(object_list[0])
-
-            prep.plot_check(prep.file_paths[a], prep.file_paths[f'DI_{a}'])
-
-            print(f"Writing molecfit ready fits file for {a} arm")
-            prep.make_molecfit_ready(prep.file_paths[a], prep.file_paths[f'DI_{a}'])
-            #prep.final_check()
+            for obj in object_list:
+                try:
+                    path = prep.file_paths.get(f'DI_{a}')
+                    if path is None or not os.path.exists(path):
+                        continue
+                    with fits.open(path) as hdul:
+                        data = hdul[0].data
+                        errs = hdul[1].data
+                        qual = hdul[2].data
+                        header = hdul[0].header
+                        n_lambda = header["NAXIS1"]
+                        airm_start = header["ESO TEL AIRM START"]
+                        airm_end = header["ESO TEL AIRM END"]
+                        exptime = header["EXPTIME"]
+                        wave = np.zeros(n_lambda)
+                        for i in range(n_lambda):
+                            wave[i] = (i + 1 - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
+                        if data is None or not np.any(data):
+                            print('data not found')
+                            continue
+                except Exception as e:
+                    print(f"Skipping {obj} DI_{a} due to error: {e}")
+                    continue
+                print(f"Writing molecfit ready fits file for {a} arm")
+                prep.make_molecfit_ready(prep.file_paths[a], data, errs, qual, airm_start, airm_end, exptime)
