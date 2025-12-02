@@ -51,20 +51,23 @@ import os
 class AlbedoAnalysis:
     def __init__(self, body):
         self.body = body.lower()
-        self.work_dir = f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files'
-        self.albedo_file = self.work_dir + f'\\MOV_{self.body.title()}_SCI_IFU_ALBEDO.fits'
+
+        paths = {'neptune': r"C:\Users\ninam\Documents\Chile_Stuff\Dissertation\Spec_Files\Neptune\Post_Molecfit\MOV_Neptune_SCI_IFU_ALBEDO.fits",
+                 'saturn': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Saturn\\Post_Molecfit\\MOV_Saturn_SCI_IFU_ALBEDO.fits",
+                 'uranus': "C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\Uranus\\Post_Molecfit\\MOV_Uranus_SCI_IFU_ALBEDO.fits",
+                 'titan': r"C:\Users\ninam\Documents\Chile_Stuff\Dissertation\Spec_Files\Titan\Post_Molecfit\MOV_Titan_SCI_IFU_ALBEDO.fits",
+                 }
+
+        self.work_dir = os.path.dirname(paths[self.body.lower()])
+        self.albedo_file = paths[self.body.lower()]
         self.load_data()
         self.find_albedo()
-        #self.find_filter_colors()
 
     def load_data(self):
-        # Johnson Filter Colors
-        filter_keys = ['U_PHOT', 'B_PHOT', 'V_PHOT','R_PHOT', 'I_PHOT',
-                       'J_PHOT','K_PHOT']
+
         try:
             hdu = fits.open(self.albedo_file, mode='readonly')
 
-            # Check if the celestial body is in the header
             self.wav = hdu[0].data
             self.flux = hdu['FLUX'].data
             self.errors = hdu['ERRS'].data
@@ -73,12 +76,10 @@ class AlbedoAnalysis:
             self.mask_wrn = np.invert([bool(x) for x in hdu['MASK_WRN'].data])
             self.bb_temp = hdu[0].header.get('BB_TEMP')
             self.flux_std = hdu[0].header.get('FLUX_STD')
-            self.norm_idx = hdu[0].header.get('NORM_IDX')
-            self.filters = [{fkey :hdu[0].header.get(fkey, 'Not Available')}
-                            for fkey in filter_keys]
+            #self.norm_idx = hdu[0].header.get('NORM_IDX')
             self.clean_name = re.sub(r'\d+', '', self.body)
 
-            print(f"Data loaded for celestial body: {self.body}")
+            print(f"Data loaded for: {self.body}")
 
         except FileNotFoundError:
             print(f"File not found: {self.albedo_file}")
@@ -86,6 +87,12 @@ class AlbedoAnalysis:
             # Close the file
             if 'hdu' in locals() and hdu is not None:
                 hdu.close()
+
+        mask = np.isfinite(self.flux)
+        self.wav = self.wav[mask]
+        self.flux = self.flux[mask]
+        self.current_wav = self.wav
+        self.current_flux = self.flux
 
     def closest_index(self, arr, val):
         """
@@ -104,11 +111,29 @@ class AlbedoAnalysis:
 
     def find_albedo(self):
 
-        sp = SourceSpectrum(BlackBodyNorm1D, temperature=self.bb_temp)
-        bb_flux = sp(self.wav * un.um)
-        self.bb_flux = bb_flux / bb_flux[self.norm_idx]
+        #sp = SourceSpectrum(BlackBodyNorm1D, temperature=self.bb_temp)
+        sort_idx = np.argsort(self.wav)
+        self.wav = self.wav[sort_idx]
+        self.flux = self.flux[sort_idx]
+        self.albedo = self.flux
+        #bb_flux = sp(self.wav * un.um)
+        #self.bb_flux = np.array(bb_flux) / np.max(np.array(bb_flux))
+        #self.bb_flux *= np.nanpercentile(self.flux, 99)
 
-        self.albedo = self.flux / self.bb_flux
+        #self.albedo = self.flux / self.bb_flux
+        #self.albedo = self.albedo[0]
+        self.current_flux = self.albedo
+
+        # Test Plot
+        w, h = plt.figaspect(0.5)
+        fig, ax = plt.subplots(1, 1, figsize=(w, h))
+        plt.subplots_adjust(hspace=0.4)
+        ax.plot(self.wav, self.flux, color='b', alpha=0.5, linewidth=0.5, label='Post-Molecfit')
+        ax.plot(self.wav, self.albedo, color='cornflowerblue', alpha=0.5, label='Albedo')
+        ax.grid(True)
+        #ax.set_ylim(top=800)
+        fig.suptitle('Starting Spec (Post Molecfit)')
+        plt.show()
 
     def plot_data_and_regions(self, ax, wave, data):
         ax.plot(wave, data, color='black', linewidth=0.3)
@@ -122,32 +147,11 @@ class AlbedoAnalysis:
         ax.xaxis.set_major_formatter(StrMethodFormatter('{x:.2f}'))
         ax.xaxis.set_minor_formatter(StrMethodFormatter('{x:.2f}'))
 
-    def find_filter_colors(self):
-
-        # Add in Filters
-        filters = {'johnson_u': 'U_PHOT', 'johnson_b': 'B_PHOT', 'johnson_v': 'V_PHOT',
-                   'johnson_r': 'R_PHOT', 'johnson_i': 'I_PHOT', 'johnson_j': 'J_PHOT',
-                   'johnson_k': 'K_PHOT'}
-        # Create a spectrum object with unit info
-        wave_ang = self.wav * 10000 * u.angstrom
-        spectrum = self.flux * units.FLAM
-        spectrum_obj = SourceSpectrum(Empirical1D, points=wave_ang, lookup_table=spectrum)
-
-        self.filt_colors = dict.fromkeys(filters.keys())
-        self.filt_locs = dict.fromkeys(filters.keys())
-        for f in filters.keys():
-            # Load a filter
-            band = SpectralElement.from_filter(f)
-            # Determine the color
-            observation = Observation(spectrum_obj, band, force='taper')
-            self.filt_colors[f] = observation.effstim(flux_unit='flam')
-            self.filt_locs[f] = observation.effective_wavelength() / 10000
-
     def load_solar_specs(self):
 
         # VIS File path
-        self.sun_spec_vis = f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\NARVAL_Sun.txt'
-        self.sun_spec_lisird = f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\LISIRD.txt'
+        self.sun_spec_vis = f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\NARVAL_Sun.txt'
+        self.sun_spec_lisird = f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\LISIRD.txt'
 
         # Load in the data from the file
         self.lisird_data = np.loadtxt(self.sun_spec_lisird, delimiter=',')
@@ -165,41 +169,50 @@ class AlbedoAnalysis:
         self.sun_wave_vis = self.vis_data[:, 0] / 1000
         self.sun_flux_vis = self.vis_data[:, 1]
 
-        #wav_lim_low = self.closest_index(self.wav, sun_wave_vis[0]) + 1
-        #wav_lim_high = self.closest_index(self.wav, sun_wave_vis[-1])
-
         # NIR File path
-        self.sun_spec_ir = f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files\\SOL_merged.fits'
+        self.sun_spec_ir = f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\SOL_merged.fits'
 
         #Load in the data from the file
         with fits.open(self.sun_spec_ir) as hdul:
             self.sun_wave_ir = hdul[0].data / 1000
             self.sun_flux_ir = hdul[1].data
 
-        self.solar_absorptions = [1.203485, 1.227412, 1.140696, 1.09180, 1.08727, 1.07899,
-                             0.98920, 1.01487, 1.502919, 1.589281, 1.67553, 1.67236,
+        self.solar_absorptions = [0.42280, 0.43092, 0.58915, 0.64025, 0.656475, 0.8501,
+                                  0.85440, 0.86641, 1.0832, 1.1285, 1.2824, 1.5650, 1.6152, 1.9522, 2.0582,
+                                  1.203485, 1.227412, 1.140696, 1.09180, 1.08727, 1.07899,
+                             1.01487, 1.502919, 1.589281, 1.67553, 1.67236,
                              1.711338, 1.945829, 1.951114, 1.972798, 2.116965, 1.97823, 1.98675, 1.05880]
+
+        # 0.39345,0.39695,0.98920
         self.solar_absorptions.sort()
-        self.data_absorptions = [1.203104, 1.226985, 1.140339, 1.09144, 1.08689, 1.07864,
-                            0.98903, 1.01461, 1.502442, 1.588782, 1.67501, 1.67189,
+        self.data_absorptions = [0.42264, 0.43076, 0.58896, 0.6400, 0.65626, 0.84980,
+                                 0.85421, 0.86621, 1.0830, 1.1283, 1.2822, 1.5648, 1.615, 1.952, 2.058,
+                                 1.203104, 1.226985, 1.140339, 1.09144, 1.08689, 1.07864,
+                             1.01461, 1.502442, 1.588782, 1.67501, 1.67189,
                             1.710817, 1.945225, 1.950529, 1.9721615, 2.116318, 1.9775, 1.98615, 1.05845]
+
+        #0.39336,0.39682,0.98903,
         self.data_absorptions.sort()
 
-        self.best_lines = [1,2,4,7,8,10,11,12,14,15,16,17,18]
-        #self.best_lines = [0]
+        self.best_lines = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] # neptune
+        #self.best_lines = [0,1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] # titan
+        #self.best_lines = [0,1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18,20,21,22,23,24,25,26,27,28,29,30,31,32,33] # saturn
         self.best_solars = [self.solar_absorptions[i] for i in self.best_lines]
         self.best_datas = [self.data_absorptions[i] for i in self.best_lines]
 
         # Plot the results
         fig1 = plt.figure(1)
         ax1 = fig1.add_subplot(111)
-        ax1.plot(self.wav, self.flux, linewidth=0.3, label=self.clean_name.title(), color='black')
+        ax1.plot(self.wav, self.albedo, linewidth=0.3, label=self.clean_name.title(), color='black')
         ax1.plot(self.lisird_wave, self.lisird_flux, linewidth=0.3, label='LISIRD', color='teal')
         ax1.legend()
         ax1.set_xlabel('Wavelength (µm)')
         ax1.set_ylabel('Flux')
-        ax1.set_ylim(bottom=0.0, top=np.max(self.lisird_flux)*1.1)
-        plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\solar_spec.png')
+        #ax1.set_ylim(bottom=0.0, top=np.max(self.lisird_flux)*1.1)
+        #ax1.set_ylim(bottom=0.0, top=700)
+        #ax1.set_xlim(left=0.38, right=0.39)
+        ax1.minorticks_on()
+        plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\solar_spec.png')
         fig1.show()
 
     def rv_correction(self):
@@ -214,51 +227,62 @@ class AlbedoAnalysis:
         def gaussian(x, amp, mean, stddev, baseline):
             return -amp * np.exp(-((x-mean)/(2*stddev))**2) + baseline
 
-        shifts = []
         lisird_shifts = []
-        new_solar_mins = []
         new_data_mins = []
         new_lisird_mins = []
         fig2 = plt.figure(2)
+        fig2.tight_layout()
         subplot=1
         index=1
+        counter = 0
         for solar_target, data_target in zip(self.best_solars, self.best_datas):
+            print(f'Line Number {self.best_lines[counter]}')
+            counter += 1
+
             # Find the central wavelength of the solar absorption
-            solar_min = find_minimum(self.sun_wave_ir, self.sun_flux_ir, solar_target, 0.00001)
-            lisird_min = find_minimum(self.lisird_wave, self.lisird_flux, solar_target, 0.001)
+            lisird_min = find_minimum(self.lisird_wave, self.lisird_flux, solar_target, 0.0001)
+            print(f'Suggested solar: {solar_target}')
+            print(f'Lisird min: {lisird_min}')
+
             # Find the central wavelength of the data absorption by finding the minimum (back-up technique)
-            data_min = find_minimum(self.wav, self.flux, data_target, 0.001)
+            data_min = find_minimum(self.wav, self.albedo, data_target, 0.001)
+            print(f'Suggested Data: {data_target}')
+            print(f'Data min: {data_min}')
+
             # Clip out a range of wavelength values to focus on
             wavelength_range = np.abs(self.wav - data_target) <= 0.01
             x_data = self.wav[wavelength_range]
-            y_data = self.flux[wavelength_range]
+            y_data = self.albedo[wavelength_range]
+
             # Search for large absorptions within the clipped region
             peaks, _ = find_peaks((-y_data)) #, prominence=0.0001)
+
             # Find the peak closest to the target wavelength (assumes I was fairly accurate)
             closest_peak_index = peaks[np.argmin(np.abs(x_data[peaks] - data_target))]
+
             # Clip a smaller region to really focus on this one peak
             peak_range = np.arange(max(0, closest_peak_index - 8), min(len(x_data), closest_peak_index + 8))
+
             # Make educated guesses about the amplitude and sigma for initialization
             amp_guess = max(y_data[peak_range]) - min(y_data[peak_range])
             sig_guess = np.abs(x_data[peak_range[0]] - x_data[peak_range[-1]]) / 4.
-            initial_guess = [amp_guess, x_data[closest_peak_index], sig_guess, max(y_data[peak_range])]
+            initial_guess = [amp_guess, data_min, sig_guess, max(y_data[peak_range])]
             try:
                 # Fit gaussians to hone in on the true amp, mean, and sigma, return the best mean
                 params = curve_fit(gaussian, x_data[peak_range], y_data[peak_range], p0=initial_guess)
                 gauss_min = params[0][1]
                 # Plot a few to check result
-                if subplot in [2,3,4]:
-                    if subplot == 2:
+                if subplot in [1, 2, 3, 4, 5, 6, 7]:
+                    if subplot == 1:
                         labels = ['LISIRD', self.clean_name.title(), 'Solar Feature', 'Gaussian Fit', 'LISIRD Feature', 'By Eye', 'Shifted']
                     else:
                         labels = [None, None, None, None, None, None, None]
-                    ax2 = fig2.add_subplot(3, 1, index)
-                    low = self.closest_index(self.sun_wave_ir, x_data[0])
-                    high = self.closest_index(self.sun_wave_ir, x_data[-1])
+                    ax2 = fig2.add_subplot(7, 1, index)
+                    #low = self.closest_index(self.sun_wave_ir, x_data[0])
+                    #high = self.closest_index(self.sun_wave_ir, x_data[-1])
                     l_low = self.closest_index(self.lisird_wave, x_data[0])
                     l_high = self.closest_index(self.lisird_wave, x_data[-1])
                     scale_factor = np.mean(y_data) / np.mean(self.lisird_flux[l_low:l_high])
-                    #ax2.plot(self.sun_wave_ir[low:high],self.sun_flux_ir[low:high]-1, color='lightgray')
                     ax2.plot(self.lisird_wave[l_low:l_high], self.lisird_flux[l_low:l_high] * scale_factor, color='teal', label=labels[0])
                     ax2.plot(x_data, y_data, color='black', label=labels[1])
                     #ax2.plot(x_data[peak_range], y_data[peak_range], color='blue')
@@ -270,17 +294,17 @@ class AlbedoAnalysis:
                     #ax2.axvline(data_min, linestyle='--', color='violet', label=labels[5])
                     #ax2.axvline((gauss_min-3.939984916106145e-05)/0.9995970818148777, linestyle='--',
                     #            color='limegreen', label=labels[6])
-                    ax2.set_xlim(solar_min-0.001, solar_min+0.001)
+                    ax2.set_xlim(lisird_min-0.001, lisird_min+0.001)
                     ax2.set_xlabel('Wavelength (µm)')
                     ax2.set_ylabel('Flux')
                     fig2.legend()
                     index += 1
                 subplot += 1
                 # Save values
-                new_solar_mins.append(solar_min)
+                #new_solar_mins.append(solar_min)
                 new_data_mins.append(gauss_min)
                 new_lisird_mins.append(lisird_min)
-                shifts.append(solar_min-gauss_min)
+                #shifts.append(solar_min-gauss_min)
                 lisird_shifts.append(lisird_min-gauss_min)
             except RuntimeError:
                 continue
@@ -288,21 +312,22 @@ class AlbedoAnalysis:
         fig2.show()
 
         print(f'Targets: {self.best_solars}')
-        print(f'Shifts: {shifts}')
+       # print(f'Shifts: {shifts}')
         print(f'Lisird Shifts: {lisird_shifts}')
 
-        linregress = np.polyfit(new_solar_mins, new_data_mins, 1)
+        #linregress = np.polyfit(new_solar_mins, new_data_mins, 1)
         lisird_linregress = np.polyfit(new_lisird_mins, new_data_mins, 1)
 
-        regress_line = np.polyval(linregress, np.array(new_solar_mins))
+        #regress_line = np.polyval(linregress, np.array(new_solar_mins))
         lisird_regress_line = np.polyval(lisird_linregress, np.array(new_lisird_mins))
 
         new_data_mins = np.array(new_data_mins)
-        shifted_data_mins = (new_data_mins-linregress[1])/linregress[0]
+        #shifted_data_mins = (new_data_mins-linregress[1])/linregress[0]
         lisird_shifted_data_mins = (new_data_mins-lisird_linregress[1])/lisird_linregress[0]
 
-        rvs = 2.99792458e8 * (new_data_mins-shifted_data_mins)/shifted_data_mins
-        lisird_rvs = 2.99792458e8 * (new_data_mins-lisird_shifted_data_mins)/lisird_shifted_data_mins
+        #rvs = 2.99792458e8 * (new_data_mins-shifted_data_mins)/shifted_data_mins
+        lisird_rvs = 2.99792458e8 * np.abs(new_data_mins-lisird_shifted_data_mins)/lisird_shifted_data_mins
+        print(f'RVS: {lisird_rvs}')
 
         fig3 = plt.figure(3)
         gs = fig3.add_gridspec(2, 1, height_ratios=[3, 1], hspace=0)
@@ -325,13 +350,13 @@ class AlbedoAnalysis:
         plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\solar_linear_regression.png')
         fig3.show()
 
-        self.rv_corr = (self.wav-linregress[1])/linregress[0]
+        #self.rv_corr = (self.wav-linregress[1])/linregress[0]
         self.lisird_rv_corr = (self.wav-lisird_linregress[1])/lisird_linregress[0]
 
     def gaussian_convolution(self):
 
-        self.sun_lim = self.closest_index(self.sun_wave_ir, self.rv_corr[-1]) + 2
-        self.wav_lim = self.closest_index(self.rv_corr, self.sun_wave_ir[0]) + 1
+        #self.sun_lim = self.closest_index(self.sun_wave_ir, self.rv_corr[-1]) + 2
+        #self.wav_lim = self.closest_index(self.rv_corr, self.sun_wave_ir[0]) + 1
 
         self.lisird_low_lim = self.closest_index(self.lisird_wave, self.lisird_rv_corr[0]) - 1
         self.lisird_high_lim = self.closest_index(self.lisird_wave, self.lisird_rv_corr[-1]) + 2
@@ -341,36 +366,76 @@ class AlbedoAnalysis:
         # Form a few sub-groups and compare
         # Wavelength dependance on width? (XSHOOTER Manual?)
         def gaussian_kernel(size, sigma):
-            x = np.linspace(int(-size / 2), int(size / 2), int(size))
-            kernel = np.exp(-x ** 2 / (2 * sigma ** 2))
-            return kernel / np.sum(kernel)
+            """
+            size : positive integer number of samples (will be coerced to odd integer >=3)
+            sigma: positive float
+            returns normalized kernel (sum == 1)
+            """
+            # validate inputs
+            if not np.isfinite(size) or not np.isfinite(sigma):
+                return None
+
+            # coerce size to a sensible integer (odd preferred)
+            size_i = int(max(3, round(float(size))))
+            if size_i % 2 == 0:
+                size_i += 1
+
+            sigma_f = float(sigma)
+            if sigma_f <= 0 or np.isnan(sigma_f):
+                return None
+
+            # create grid centered at zero
+            half = size_i // 2
+            x = np.linspace(-half, half, size_i)
+            kernel = np.exp(-0.5 * (x / sigma_f) ** 2)
+            s = np.sum(kernel)
+            if s <= 0 or not np.isfinite(s):
+                return None
+            return kernel / s
 
         def fitness_function(guesses, data_wav, data_flux, solar_wav, solar_flux):
-            # Unpack parameters
+            """
+            guesses: [kernel_size (float), sigma (float)]
+            Return a scalar cost (MSE). On invalid inputs return a large penalty.
+            """
             kernel_size, sigma = guesses
 
+            # quick validation
+            if (not np.isfinite(kernel_size)) or (not np.isfinite(sigma)):
+                return 1e6
+
+            # coerce and guard
             kernel = gaussian_kernel(kernel_size, sigma)
+            if kernel is None:
+                return 1e6
 
-            # Convolve the solar spectrum with the Gaussian kernel
-            smoothed_solar_spec = convolve1d(solar_flux, kernel, mode='constant')
+            # ensure there is data to operate on
+            if len(solar_flux) < 3 or len(data_flux) < 3:
+                return 1e6
 
-            interp_func = interp1d(solar_wav, smoothed_solar_spec, kind='slinear')
-            interp_smooth = interp_func(data_wav)
+            # convolve and interpolate
+            try:
+                smoothed_solar_spec = convolve1d(solar_flux, kernel, mode='constant', cval=0.0)
+                interp_func = interp1d(solar_wav, smoothed_solar_spec, kind='slinear', bounds_error=False,
+                                       fill_value=np.nan)
+                interp_smooth = interp_func(data_wav)
+                # if interpolation fails or produces NaN, penalize
+                if not np.all(np.isfinite(interp_smooth)):
+                    return 1e6
+                mse = np.mean((interp_smooth - data_flux) ** 2)
+                # if mse is NaN for any reason, penalize
+                if not np.isfinite(mse):
+                    return 1e6
+                return mse
+            except Exception:
+                # any unexpected crash -> big penalty
+                return 1e6
 
-            # Calculate mean squared error
-            mse = np.mean((interp_smooth - data_flux) ** 2)
+        # prepare bounds: kernel_size between 3 and, say, 401; sigma between 0.1 and 100
+        bounds = [(3, 401), (0.1, 200.0)]
 
-            return mse
+        initial_guess = [50.0, 10.0]
 
-        # Initial guess for kernel size and sigma
-        # Optimize the fitness function
-        #data_arr = self.rv_corr[wav_lim:]
-        #solar_wav = sun_wave_ir[:sun_lim]
-        #solar_wav= np.array(solar_wav.tolist())
-        #solar_flux = sun_flux_ir[:sun_lim]
-        #solar_flux = np.array(solar_flux.tolist())
-        initial_guess=[50, 10]
-        results = []
         lisird_results = []
         for b in self.best_solars:
             print(f'Working on line: {b}')
@@ -378,56 +443,57 @@ class AlbedoAnalysis:
             data_wav = self.lisird_rv_corr[data_idx]
             data_flux = self.flux[data_idx]
 
-            solar_idx = np.abs(self.sun_wave_ir - b) <= 0.04
-            solar_wav = self.sun_wave_ir[solar_idx]
-            solar_flux = self.sun_flux_ir[solar_idx]
-
             lisird_idx = np.abs(self.lisird_wave - b) <= 0.04
             lisird_wav = self.lisird_wave[lisird_idx]
             lisird_flux = self.lisird_flux[lisird_idx]
 
-            min_solar_wav = np.min(solar_wav)
-            max_solar_wav = np.max(solar_wav)
+            # check there is enough data to fit
+            if data_wav.size < 5 or lisird_wav.size < 5:
+                print("Skipping line due to insufficient data points.")
+                continue
+
             min_lisird_wav = np.min(lisird_wav)
             max_lisird_wav = np.max(lisird_wav)
 
-            low = self.closest_index(data_wav, min_solar_wav) + 1
-            high = self.closest_index(data_wav, max_solar_wav) - 1
             lis_low = self.closest_index(data_wav, min_lisird_wav) + 1
             lis_high = self.closest_index(data_wav, max_lisird_wav) - 1
 
             l_data_wav = data_wav[lis_low:lis_high]
             l_data_flux = data_flux[lis_low:lis_high]
-            data_wav = data_wav[low:high]
-            data_flux = data_flux[low:high]
-            result = minimize(fitness_function, initial_guess, args=(data_wav,data_flux,solar_wav, solar_flux), method='TNC')
-            results.append(result.x)
-            l_result = minimize(fitness_function, initial_guess, args=(l_data_wav,l_data_flux,lisird_wav,lisird_flux), method='TNC')
-            lisird_results.append(l_result.x)
-        results = np.array(results)
-        lisird_results = np.array(lisird_results)
-        size = np.mean(results[:, 0])
-        sigma = np.median(results[:, 1])
-        lisird_size = np.mean(lisird_results[:, 0])
-        lisird_sigma = np.median(lisird_results[:, 1])
+
+            # again check the sliced arrays are not empty
+            if l_data_wav.size < 5 or lisird_wav.size < 5:
+                print("Skipping line after slicing: insufficient overlap.")
+                continue
+
+            res = minimize(fitness_function, initial_guess, args=(l_data_wav, l_data_flux, lisird_wav, lisird_flux),
+                           method='TNC', bounds=bounds, options={'maxfun': 1000})
+            if not res.success:
+                print("Optimizer warning/failure:", res.message)
+            lisird_results.append(res.x)
+
+        # convert to array safely
+        if lisird_results:
+            lisird_results = np.array(lisird_results)
+            lisird_size = np.mean(lisird_results[:, 0])
+            lisird_sigma = np.median(lisird_results[:, 1])
+        else:
+            lisird_size = np.nan
+            lisird_sigma = np.nan
+            print("No successful lisird fits were found.")
 
         # Use these optimal values to smooth the solar spectrum
-        optimal_gaussian = gaussian_kernel(size, sigma)
-        self.smoothed_solar_spectrum = convolve1d(self.sun_flux_ir, optimal_gaussian, mode='constant')
         lisird_optimal_gaussian = gaussian_kernel(lisird_size, lisird_sigma)
         self.smoothed_lisird_spectrum = convolve1d(self.lisird_flux, lisird_optimal_gaussian, mode='constant')
 
         fig4 = plt.figure(4)
         ax4 = fig4.add_subplot(211)
-        #ax4.plot(self.sun_wave_ir[:self.sun_lim], self.sun_flux_ir[:self.sun_lim], color='teal', linewidth=0.3, label='Original')
-        #ax4.plot(self.sun_wave_ir[:self.sun_lim], self.smoothed_solar_spectrum[:self.sun_lim], linewidth=0.3, color='cornflowerblue', label='Conlvolved')
-        #ax4.plot(self.rv_corr[self.wav_lim:], self.flux[self.wav_lim:]+1.0, linewidth=0.3, label='Neptune', color='k')
-        ax4.plot(self.lisird_rv_corr, self.flux, linewidth=0.3, label=self.clean_name.title(), color='k')
+        ax4.plot(self.lisird_rv_corr, self.albedo, linewidth=0.3, label=self.clean_name.title(), color='k')
         ax4.plot(self.lisird_wave[self.lisird_low_lim:self.lisird_high_lim], self.lisird_flux[self.lisird_low_lim:self.lisird_high_lim], color='teal', linewidth=0.3,
                  label='Original')
         ax4.plot(self.lisird_wave[self.lisird_low_lim:self.lisird_high_lim], self.smoothed_lisird_spectrum[self.lisird_low_lim:self.lisird_high_lim], linewidth=0.3,
                  color='cornflowerblue', label='Conlvolved')
-        ax4.set_ylim(bottom=0.0, top=np.max(self.lisird_flux[self.lisird_low_lim:self.lisird_high_lim])*1.1)
+        ax4.set_ylim(bottom=0.0, top=np.nanmax(self.lisird_flux[self.lisird_low_lim:self.lisird_high_lim])*1.1)
         ax5 = fig4.add_subplot(212)
         rv_low = self.closest_index(self.lisird_rv_corr, 0.48)
         rv_high = self.closest_index(self.lisird_rv_corr, 0.52)
@@ -442,7 +508,7 @@ class AlbedoAnalysis:
                  linewidth=0.8,
                  color='cornflowerblue')
         ax5.plot(self.lisird_rv_corr, self.flux, linewidth=0.5, color='k')
-        ax5.set_xlim((0.48, 0.52))
+        ax5.set_xlim((0.57, 0.62))
         ax5.set_ylim(bottom=np.min(self.lisird_flux[self.lisird_low_lim:self.lisird_high_lim] - scale_factor_orig), top=np.max(self.lisird_flux[self.lisird_low_lim:self.lisird_high_lim] - scale_factor_orig)*1.1)
         ax5.set_xlabel('Wavelength (µm)')
         ax5.set_ylabel('Relative Flux')
@@ -453,8 +519,8 @@ class AlbedoAnalysis:
 
     def interpolate(self):
 
-        interp_function = interp1d(self.sun_wave_ir[:self.sun_lim], self.smoothed_solar_spectrum[:self.sun_lim], kind='slinear')
-        self.interp_smoothed = interp_function(self.rv_corr[self.wav_lim:])
+        #interp_function = interp1d(self.sun_wave_ir[:self.sun_lim], self.smoothed_solar_spectrum[:self.sun_lim], kind='slinear')
+        #self.interp_smoothed = interp_function(self.rv_corr[self.wav_lim:])
 
         # Adjust limits safely to ensure they are within bounds
         new_lim_low = self.closest_index(self.lisird_wave, self.lisird_rv_corr[0])
@@ -528,11 +594,8 @@ class AlbedoAnalysis:
         #fig1.suptitle(f'Albedo')
         #fig1.show()
 
-
-        #self.current_wav = self.rv_corr[self.wav_lim:]
-        #self.current_flux = self.flux[self.wav_lim:] / self.interp_smoothed
         self.current_wav = self.lisird_rv_corr[1:-1]
-        self.current_flux = self.flux[1:-1] / self.lisird_interp_smoothed[1:-1]
+        self.current_flux = self.albedo[1:-1] / self.lisird_interp_smoothed[1:-1]
 
     def calculate_bond_albedo(self):
         """
@@ -562,46 +625,32 @@ class AlbedoAnalysis:
 
     def save_fits(self):
 
-        paper_ready_file = self.work_dir + f'\\MOV_{self.body.title()}_SCI_IFU_PAPER_READY_NEW.fits'
+        paper_ready_file = self.work_dir + f'\\MOV_{self.body.title()}_SCI_IFU_PAPER_READY.fits'
         # length check
         lengths = [
             len(self.current_wav),
-            len(self.current_flux),
+            len(self.albedo[1:-1]),
             #len(self.interp_smoothed),
             len(self.lisird_interp_smoothed)
         ]
         min_length = min(lengths)
         self.current_wav = self.current_wav[:min_length]
-        self.current_flux = self.current_flux[:min_length]
+        self.current_flux = self.albedo[1:min_length]
         #self.interp_smoothed = self.interp_smoothed[:min_length]
         self.lisird_interp_smoothed = self.lisird_interp_smoothed[:min_length]
 
         if os.path.exists(paper_ready_file):
-            hdu = fits.open(paper_ready_file, mode='update')
-            hdu[0].data = self.current_wav
-            hdu[1].data = self.current_flux
-            #sun_flux_hdu = fits.ImageHDU(self.interp_smoothed, name='SUN_FLUX')
-            lisird_flux_hdu = fits.ImageHDU(self.lisird_interp_smoothed, name='LISIRD_FLUX')
-            #hdu.append(sun_flux_hdu)
-            hdu.append(lisird_flux_hdu)
+            os.remove(paper_ready_file)
 
-            resp_crv_hdu = fits.ImageHDU(self.resp_crv, name='RESP_CRV')
-            hdu.append(resp_crv_hdu)
-            mask_tel_hdu = fits.ImageHDU(self.mask_tel.astype(int), name='MASK_TEL')
-            hdu.append(mask_tel_hdu)
-            mask_wrn_hdu = fits.ImageHDU(self.mask_wrn.astype(int), name='MASK_WRN')
-            hdu.append(mask_wrn_hdu)
-            hdu.flush()
-        else:
-            primary_hdu = fits.PrimaryHDU(data=self.current_wav)
-            flux_hdu = fits.ImageHDU(data=self.current_flux, name='FLUX')
-            #sun_flux_hdu = fits.ImageHDU(data=self.interp_smoothed, name='SUN_FLUX')
-            lisird_flux_hdu = fits.ImageHDU(self.lisird_interp_smoothed, name='LISIRD_FLUX')
-            resp_crv_hdu = fits.ImageHDU(self.resp_crv, name='RESP_CRV')
-            mask_tel_hdu = fits.ImageHDU(self.mask_tel.astype(int), name='MASK_TEL')
-            mask_wrn_hdu = fits.ImageHDU(self.mask_wrn.astype(int), name='MASK_WRN')
-            hdul = fits.HDUList([primary_hdu, flux_hdu, lisird_flux_hdu, resp_crv_hdu, mask_tel_hdu, mask_wrn_hdu])
-            hdul.writeto(paper_ready_file, overwrite=True)
+        primary_hdu = fits.PrimaryHDU(data=self.current_wav)
+        flux_hdu = fits.ImageHDU(data=self.current_flux, name='FLUX')
+        #sun_flux_hdu = fits.ImageHDU(data=self.interp_smoothed, name='SUN_FLUX')
+        lisird_flux_hdu = fits.ImageHDU(self.lisird_interp_smoothed, name='LISIRD_FLUX')
+        resp_crv_hdu = fits.ImageHDU(self.resp_crv, name='RESP_CRV')
+        mask_tel_hdu = fits.ImageHDU(self.mask_tel.astype(int), name='MASK_TEL')
+        mask_wrn_hdu = fits.ImageHDU(self.mask_wrn.astype(int), name='MASK_WRN')
+        hdul = fits.HDUList([primary_hdu, flux_hdu, lisird_flux_hdu, resp_crv_hdu, mask_tel_hdu, mask_wrn_hdu])
+        hdul.writeto(paper_ready_file, overwrite=True)
 
         print(f'File Saved to: ' + paper_ready_file)
 
@@ -855,25 +904,18 @@ def multi_object_handler(object_list, **kwargs):
 
         scale_factor = np.percentile(obj.flux, 95) / np.percentile(obj.current_flux, 95)
         obj.current_flux *= scale_factor
-        fig103, (ax103, ax203) = plt.subplots(2, 1)
+        fig103, ax103 = plt.subplots(1, 1)
         ax103.plot(obj.wav, obj.flux, label='Before', color='k', linewidth=0.3)
-        ax103.plot(obj.current_wav, obj.current_flux, label='After', color='cornflowerblue', linewidth=0.3)
-        ax203.plot(obj.wav, obj.flux, color='k', linewidth=0.3)
-        ax203.plot(obj.current_wav, obj.current_flux, color='cornflowerblue', linewidth=0.3)
+        ax103.plot(obj.current_wav[1:], obj.current_flux, label='After', color='cornflowerblue', linewidth=0.3)
 
-    ax203.set_xlabel("Wavelength (µm)")
+    ax103.set_xlabel("Wavelength (µm)")
     ax103.set_ylabel("Relative Flux")
-    ax203.set_ylabel("Relative Flux")
-    ax103.set_ylim(bottom=0.0, top=np.percentile(obj.flux, 99)*1.2)
-    ax203.set_xlim((0.48, 0.52))
-    ax203.set_ylim(0.0, 1.5e-15)
+    ax103.set_ylim(bottom=0.0, top=np.percentile(obj.flux, 95)*1.2)
     ax103.legend(loc='upper right')
     #fig103.suptitle("Solar Spectrum Correction Results")
     plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Solar_spectrum_correction_results.png')
     fig103.show()
 
 if __name__ == "__main__":
-    bodies = ['Neptune']
+    bodies = ['uranus']
     alb = multi_object_handler(bodies)
-
-#Make sure the wavelengths are only plotted once when the trustable region maps are plotted
