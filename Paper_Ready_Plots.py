@@ -3,12 +3,15 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import numpy as np
 import pandas as pd
+import bottleneck as bn
 from astropy.io import fits
 from astropy.table import Table
 from scipy.signal import find_peaks, peak_widths
-from scipy.ndimage import median_filter
+from scipy.signal import savgol_filter
+from scipy.ndimage import median_filter, uniform_filter1d
 import atmospheric_models as am
 from scipy.optimize import curve_fit
+import matplotlib.ticker as ticker
 
 
 class PaperReadyPlots:
@@ -36,19 +39,37 @@ class PaperReadyPlots:
     def _load_data(self, bodies, **kwargs):
         for body in bodies:
             body = body.lower()
-            work_dir = f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Spec_Files'
+            print(f"Loading data for: {body}")
+            work_dir = f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Spec_Files\\{body.title()}\\Post_Molecfit'
             fits_file_path = work_dir + f'\\MOV_{body.title()}_SCI_IFU_PAPER_READY.fits'
+            print(f"File Path: {fits_file_path}")
 
             try:
                 with fits.open(fits_file_path) as hdul:
                     primary_hdu = hdul[0].data
                     flux_hdu = hdul[1].data
+
+                    if body == 'uranus' or body == 'neptune' or body == 'titan' or body == 'saturn':
+                        window = 101
+                        sigma_thresh = 5.0
+                        med = bn.move_median(flux_hdu, window, min_count=1)
+                        mad = bn.move_median(np.abs(flux_hdu - med), window, min_count=1)
+                        bad = np.abs(flux_hdu - med) > sigma_thresh * mad
+                        flux_hdu[bad] = med[bad]
+
+                        bin_size = 50
+                        n_bins = len(flux_hdu) // bin_size
+                        flux_binned = np.nanmean(flux_hdu[:n_bins * bin_size].reshape(n_bins, bin_size), axis=1)
+                        min_val = np.nanmin(flux_binned)
+                        flux_hdu -= min_val
+
+                    #flux_hdu /= np.nanmax(flux_hdu)
+
+
                     lisird_flux = hdul['LISIRD_FLUX'].data
                     resp_crv = hdul['RESP_CRV'].data
                     mask_tel = np.invert([bool(x) for x in hdul['MASK_TEL'].data])
                     mask_wrn = np.invert([bool(x) for x in hdul['MASK_WRN'].data])
-
-                    print(f'Wavelength Check, {body}: {primary_hdu[0]}, {primary_hdu[-1]}')
 
                     lengths = [len(primary_hdu),len(flux_hdu),len(lisird_flux),
                                len(resp_crv),len(mask_tel),len(mask_wrn)
@@ -96,7 +117,7 @@ class PaperReadyPlots:
         for mol_num, molecule in enumerate(molecules):
             print(f'Adding annotation for {molecule}')
             with fits.open(
-                    f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Elements\\hitran\\{molecule}_model.fits') as hdul:
+                    f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Elements\\hitran\\{molecule}_model.fits') as hdul:
                 model_wave = hdul[0].data
                 model_data = hdul[1].data
                 in_range = (model_wave >= x_sorted[0]) & (model_wave <= x_sorted[1])
@@ -248,12 +269,12 @@ class PaperReadyPlots:
         master_mask_tel = np.zeros_like(self.data[object_list[0].lower()]['wavelength'], dtype=bool)
         master_mask_wrn = np.zeros_like(self.data[object_list[0].lower()]['wavelength'], dtype=bool)
 
-        for obj_name in ['uranus1', 'neptune1']:
+        for obj_name in ['uranus', 'neptune', 'saturn', 'titan']:
             if obj_name.lower() not in self.data:
                 continue
             mask_tel = self.data[obj_name.lower()]['mask_tel']
             mask_wrn = self.data[obj_name.lower()]['mask_wrn']
-            if obj_name.lower() in ['titan', 'neptune1', 'neptune2']:
+            if obj_name.lower() in ['titan', 'neptune', 'neptune2']:
                 mask_tel = mask_tel[::-1]
                 mask_wrn = mask_wrn[::-1]
             master_mask_tel |= mask_tel
@@ -261,13 +282,13 @@ class PaperReadyPlots:
 
         wave = self.data[object_list[0].lower()]['wavelength']
 
-        # Define extra mask patches
-        mask_patch_wrn = (wave >= 1.3) & (wave <= 1.4)
-        mask_patch_tel = (wave >= 1.6) & (wave <= 1.8)
+        extra_mask_tel = (
+                ((wave >= 1.0) & (wave <= 1.1)) |
+                ((wave >= 1.2) & (wave <= 1.3)) |
+                ((wave >= 1.6) & (wave <= 1.8))
+        )
+        master_mask_tel |= extra_mask_tel  # combine it properly
 
-        # Apply them
-        master_mask_wrn[mask_patch_wrn] = False
-        master_mask_tel[mask_patch_tel] = False
 
         w, h = plt.figaspect(0.5)
         fig, ax = plt.subplots(figsize=(w, h))
@@ -277,8 +298,8 @@ class PaperReadyPlots:
             model = am.AtmosphericModel(molecules)
             model.create_model()
             model.plot_model(wavelength_step=0.2, feature_threshold=0.e-6)
-            model.save_model("C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Elements\\planetary_atmosphere_model.fits")
-            model_file = 'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Elements\\planetary_atmosphere_model.fits'
+            model.save_model("C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Elements\\planetary_atmosphere_model.fits")
+            model_file = 'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Elements\\planetary_atmosphere_model.fits'
             with fits.open(model_file) as hdul:
                 model_wavelength = hdul[0].data - 0.01
                 model_data = hdul[1].data
@@ -330,70 +351,8 @@ class PaperReadyPlots:
             name_clean = re.sub(r'\d+$', '', obj_name)
             data = self.data[obj_name.lower()]
             wave, flux = data['wavelength'], data['albedo']
-            if obj_name == 'neptune1':
-                flux = flux * 1.7534949899518348
             mask_tel, mask_wrn = data['mask_tel'][::-1], data['mask_wrn'][::-1]
-            mask_outside = np.logical_not(mask_tel | mask_wrn)
-
-            wave_tel = np.ma.masked_array(wave, mask=mask_tel)
-            data_tel = np.ma.masked_array(flux, mask=mask_tel)
-            ax.plot(wave_tel, data_tel + offsets.get(obj_name, 0), linewidth=0.5, color='black')#color='lightcoral')
-            wave_wrn = np.ma.masked_array(wave, mask=mask_wrn)
-            data_wrn = np.ma.masked_array(flux, mask=mask_wrn)
-            ax.plot(wave_wrn, data_wrn + offsets.get(obj_name, 0), linewidth=0.5, color='black')#color='darkgoldenrod')
-            wave_outside = np.ma.masked_array(wave, mask=mask_outside)
-            data_outside = np.ma.masked_array(flux, mask=mask_outside)
-            ax.plot(wave_outside, data_outside + offsets.get(obj_name, 0), color='black', label=obj_name,
-                    linewidth=0.5)
-
-            if show_model:
-                # Scale model to fit each planet's spectrum
-                scaled_model = model_absorption * (stats[obj_name]['mean']) + offsets.get(
-                    obj_name, 0)
-                ax.plot(model_wavelength, scaled_model, color='cornflowerblue', linestyle='--', linewidth=0.5, label='Model')
-
-            if xlims is None:
-                xlims = ax.get_xlim()
-            if ylims is None:
-                ylims = ax.get_ylim()
-
-            yloc = self.closest_index(wave, xlims[0])
-            xloc = xlims[0] - ((xlims[1] - xlims[0]) * 0.01)
-            #clean_name = re.sub(r'\d+', '', obj_name)
-            ax.text(xloc, flux[yloc] + offsets.get(obj_name, 0), obj_name, verticalalignment='center',
-                    horizontalalignment='right')
-            count += 1
-
-        #ax.set_ylim(ylims)
-        ax.set_xlim(xlims)
-
-        if molecules:
-            self.annotate_plot(ax, molecules=molecules, threshold=threshold, tolerance=tolerance)
-
-        # Function to convert microns to wavenumber (cm^-1)
-        def microns_to_wavenumber(microns):
-            return 10000 / microns
-
-        # Add secondary x-axis
-       # secax_x = ax.secondary_xaxis('top', functions=(microns_to_wavenumber, microns_to_wavenumber))
-       # secax_x.set_xlabel('Wavenumber (cm$^{-1}$)')
-
-        ax.set_xlabel("Wavelength (µm)")
-        ax.yaxis.set_visible(False)
-        secax = ax.secondary_yaxis('right')
-        ax.spines['top'].set_visible(False)
-        ax.spines['left'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        #fig.suptitle("Comparative Planetology")
-        plt.tight_layout()
-
-        plt.show()
-
-        if triplet_plots:
-            # Define step size and calculate ranges
-            step_size = kwargs.get('step_size', 0.634)  # Default step size of 0.1 microns
-            total_range = xlims[1] - xlims[0]
-            num_triplets = int(np.ceil(total_range / (3 * step_size)))  # Number of triplets
+            mask_outside = np.logical_not(mask_tel & mask_wrn)
 
             # Predefined colors for objects
             object_colors = {
@@ -409,6 +368,78 @@ class PaperReadyPlots:
                 'neptune': 'rosybrown',
                 'saturn': 'darkkhaki'
             }
+
+            ax.plot(wave, flux, linewidth=0.4, color=object_colors[name_clean], label=name_clean)
+            wave_tel = np.ma.masked_array(wave, mask=master_mask_tel)
+            data_tel = np.ma.masked_array(flux, mask=master_mask_tel)
+            ax.plot(wave_tel, data_tel, linewidth=0.4, color=telluric_colors[name_clean])
+            wave_wrn = np.ma.masked_array(wave, mask=master_mask_wrn)
+            data_wrn = np.ma.masked_array(flux, mask=master_mask_wrn)
+            ax.plot(wave_wrn, data_wrn, linewidth=0.4, color=telluric_colors[name_clean])
+            wave_outside = np.ma.masked_array(wave, mask=mask_outside)
+            data_outside = np.ma.masked_array(flux, mask=mask_outside)
+            #ax.plot(wave_outside, data_outside, color=object_colors[name_clean], linewidth=0.4, label=name_clean)
+
+            # if name_clean == 'uranus':
+           #     low1 = self.closest_index(wave, 1.02)
+           #     high1 = self.closest_index(wave, 1.095)
+           #     ax.plot(wave[low1:high1], flux[low1:high1], linewidth=0.5, color='lightslategray')
+           #     low2 = self.closest_index(wave, 1.21)
+           #     high2 = self.closest_index(wave, 1.31)
+           #     ax.plot(wave[low2:high2], flux[low2:high2], linewidth=0.5, color='lightslategray')
+
+            if show_model:
+                # Scale model to fit each planet's spectrum
+                scaled_model = model_absorption * (stats[obj_name]['mean']) + offsets.get(
+                    obj_name, 0)
+                ax.plot(model_wavelength, scaled_model, color='cornflowerblue', linestyle='--', linewidth=0.5, label='Model')
+
+            if xlims is None:
+                xlims = ax.get_xlim()
+            if ylims is None:
+                ylims = ax.get_ylim()
+
+
+            yloc = self.closest_index(wave, xlims[0])
+            xloc = xlims[0] - ((xlims[1] - xlims[0]) * 0.01)
+            #clean_name = re.sub(r'\d+', '', obj_name)
+            #ax.text(xloc, flux[yloc] + offsets.get(obj_name, 0), obj_name, verticalalignment='center',
+            #        horizontalalignment='right')
+            count += 1
+
+        #ax.set_ylim(ylims)
+        ax.set_xlim(xlims)
+        ax.legend()
+
+        if molecules:
+            self.annotate_plot(ax, molecules=molecules, threshold=threshold, tolerance=tolerance)
+
+        # Function to convert microns to wavenumber (cm^-1)
+        def microns_to_wavenumber(microns):
+            return 10000 / microns
+
+        # Add secondary x-axis
+       # secax_x = ax.secondary_xaxis('top', functions=(microns_to_wavenumber, microns_to_wavenumber))
+       # secax_x.set_xlabel('Wavenumber (cm$^{-1}$)')
+
+        ax.set_xlabel("Wavelength (µm)")
+        ax.set_ylabel(r"erg s$^{-1}$ cm$^{-2}$ $\mu$m$^{-1}$", fontsize=20)
+        plt.grid()
+        #ax.yaxis.set_visible(False)
+        #secax = ax.secondary_yaxis('right')
+        #ax.spines['top'].set_visible(False)
+        #ax.spines['left'].set_visible(False)
+        #ax.spines['right'].set_visible(False)
+        #fig.suptitle("Comparative Planetology")
+        plt.tight_layout()
+        plt.savefig(f"C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Full_Specs.png")
+        plt.show()
+
+        if triplet_plots:
+            # Define step size and calculate ranges
+            step_size = kwargs.get('step_size', 0.634)  # Default step size of 0.1 microns
+            total_range = xlims[1] - xlims[0]
+            num_triplets = int(np.ceil(total_range / (3 * step_size)))  # Number of triplets
 
             # Loop over triplets
             for triplet_index in range(num_triplets):
@@ -438,23 +469,9 @@ class PaperReadyPlots:
 
                     combined_flux = np.concatenate(combined_flux)
 
-                    # Compute dynamic y-axis limits
-                    if len(combined_flux) > 0:
-                        y_min = np.min(combined_flux)
-                        if dynamic_ylims == 'std':
-                            y_max = np.mean(combined_flux) + 3 * np.std(combined_flux)  # Standard deviation approach
-                        elif dynamic_ylims == 'percentile':
-                            y_max = np.percentile(combined_flux, 99) + 0.1  # Percentile-based approach
-                        else:
-                            y_max = np.max(combined_flux)  # Default to full range
-                    else:
-                        y_min, y_max = 0, 1  # Fallback in case of no data
-
-                    ax.set_ylim([y_min, (y_max+(y_max-y_min)*0.5)])
-
                     # Plot data for each object
-                    #for obj_name in object_list:
-                    for obj_name in ['saturn5', 'titan']:
+                    for obj_name in object_list:
+                    #for obj_name in ['saturn5', 'titan']:
                         if obj_name.lower() not in self.data:
                             print(f"No data available for {obj_name}")
                             continue
@@ -483,12 +500,14 @@ class PaperReadyPlots:
                                 label='Model')
 
                     ax.set_xlim(sub_xlim)
+                    ax.set_ylim(bottom=4e-13)
+                    ax.set_yscale('log')
                     self.annotate_plot(ax, molecules=molecules, threshold=threshold, tolerance=tolerance)
                     ax.set_xlabel("Wavelength (µm)", fontsize=20)
                     ax.xaxis.set_tick_params(labelsize=20)
                     #ax.yaxis.set_visible(False)
                     ax.yaxis.set_tick_params(labelsize=20)
-                    ax.set_ylabel("Relative Flux", fontsize=20)
+                    ax.set_ylabel(r"erg s$^{-1}$ cm$^{-2}$ $\mu$m$^{-1}$", fontsize=16)
                     ax.spines['top'].set_visible(False)
                     #ax.spines['left'].set_visible(False)
                     ax.spines['right'].set_visible(False)
@@ -500,13 +519,83 @@ class PaperReadyPlots:
                         if obj_name in [obj.lower() for obj in object_list]:
                             handles.append(plt.Line2D([0], [0], color=color, lw=2))
                             labels.append(obj_name.capitalize())
-                    #axs[0].legend(handles, labels, loc='upper right')
+                    axs[0].legend(handles, labels, loc='upper right')
 
                 # Annotate and add a title for figure
                 #plt.tight_layout()
                 plt.subplots_adjust(left=0.1, right=0.95, bottom=0.05, top=0.95)
-                plt.savefig(f"C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Full_Spec_{triplet_index}.png")
+                plt.savefig(f"C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Full_Spec_{triplet_index}.png")
                 plt.show()
+
+
+
+        dont_trust = [[0.3,0.34], [0.50, 0.51], [0.758, 0.77], [0.685, 0.695], [0.625, 0.632],
+                      [0.72, 0.73], [0.81, 0.83],[0.89, 0.98],
+                      [1.107, 1.164], [1.3, 1.5], [1.73, 2.0], [2.38, 2.48], [1.946, 1.978],
+                      [1.997, 2.032], [2.043, 2.080]]
+
+        corrected = [[0.58, 0.60], [0.64, 0.66], [0.68, 0.75], [0.78, 0.86], [0.88, 1.0],
+                     [1.062, 1.244], [1.26, 1.57], [1.63, 2.48]]
+
+        if triplet_plots:
+            xlims = [(wave[0], 1.03), (1.03, 1.64), (1.64, 2.12)]
+            count = 1
+            for xs in xlims:
+
+                fig, ax = plt.subplots(len(object_list), 1, figsize=(10, 5), sharex=True)
+                shared_ylabel = r"Flux (erg s$^{-1}$ cm$^{-2}$ $\mu$m$^{-1})$"
+                fig.text(0.03, 0.5, shared_ylabel, va='center', rotation='vertical', fontsize=16)
+
+                i = 0
+                for obj_name in object_list:
+                    data = self.data[obj_name.lower()]
+                    wave, flux = data['wavelength'], data['albedo']
+
+                    name_clean = re.sub(r'\d+$', '', obj_name)
+                    color = object_colors.get(name_clean.lower(), 'black')  # Default to black if object not defined
+
+                    ax[i].plot(wave, flux, color=color, linewidth=0.4, label=name_clean)
+                    for m in dont_trust:
+                        l = self.closest_index(wave, m[0])
+                        r = self.closest_index(wave, m[1])
+                        ax[i].plot(wave[l:r], flux[l:r], color=telluric_colors[obj_name], linewidth=0.4)
+                    for m in corrected:
+                        l = self.closest_index(wave, m[0])
+                        r = self.closest_index(wave, m[1])
+                        ax[i].plot(wave[l:r], flux[l:r], color=telluric_colors[obj_name], linewidth=0.4, alpha=0.5)
+
+                    left = self.closest_index(wave, xs[0])
+                    right = self.closest_index(wave, xs[-1])
+                    mini_sec = flux[left:right]
+                    if i == 0:
+                        lower = np.nanpercentile(mini_sec, 5)
+                    else:
+                        lower = np.nanmin(mini_sec)
+                    upper = np.nanmax(mini_sec)
+                    ax[i].set_ylim(bottom=lower, top=upper)
+
+                    ax[i].spines['top'].set_visible(False)
+                    ax[i].spines['right'].set_visible(False)
+                    ax[i].tick_params(axis='y', labelsize=10)
+
+                    if count == 1:
+                        ax[i].legend(loc='lower right')
+
+                    if i == (len(object_list) - 1):
+                        ax[i].set_xlim(xs[0], xs[1])
+                        ax[i].set_xlabel("Wavelength (µm)", fontsize=15)
+                        ax[i].xaxis.set_visible(True)
+                        ax[i].xaxis.set_tick_params(labelsize=15)
+
+                    i += 1
+
+
+                plt.subplots_adjust(left=0.1, right=0.95, bottom=0.15, top=0.9)
+                plt.savefig(f"C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\Full_Spec_{count}.png")
+                plt.show()
+                count += 1
+
+
 
     def spectral_line_fitting(self, object_list, xlims, plot_xlims):
 
@@ -559,9 +648,13 @@ class PaperReadyPlots:
             continuum_mean = np.mean(continuum[absorption_continuum])  # Single value
             continuum_error = np.std(plot_flux[~absorption_continuum] - continuum[~absorption_continuum])
             sigma_ew = ew * np.sqrt((sigma_area / area) ** 2 + (continuum_error / continuum_mean) ** 2)
-#            print(f'{clean_name} Equivalent Width: {ew:.5e}')
-#            print(f'{clean_name} EW Sigma: {sigma_ew:.5e}')
-            print(f"{clean_name} & ${ew / 10 ** int(np.log10(abs(ew))):.2f}({int(round(sigma_ew / 10 ** int(np.log10(abs(ew))) * 100)):02d}) \\times 10^{{{int(np.log10(abs(ew)))}}}$ \\\\")
+
+            exp = int(np.floor(np.log10(abs(ew)))) if ew != 0 else 0
+            mant = ew / 10 ** exp
+            err_digits = int(round(sigma_ew / 10 ** exp * 100))
+            print(f"{clean_name} & ${mant:.2f}({err_digits:02d})\\mathrm{{e}}{{{exp:+d}}}$ \\\\")
+            print(f"{clean_name}_ew = [{ew:.5f}]")
+            print(f"{clean_name}_err = [{sigma_ew:.5f}]")
 
             ax1.plot(plot_wavelength, continuum + offset, linestyle='--', color='red')
             ax1.text(xloc, plot_flux[0] + offset, clean_name.title(), verticalalignment='center', horizontalalignment='right')
@@ -591,7 +684,7 @@ class PaperReadyPlots:
         ax1.spines['left'].set_visible(False)
         ax1.spines['right'].set_visible(False)
         fig.suptitle(f'{selected_preset} Band')
-        plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\{selected_preset}_spectral_fit.png')
+        plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\{selected_preset}_spectral_fit.png')
         plt.show()
 
     def emission_line_fitting(self, object_list, xlims, plot_xlims):
@@ -623,31 +716,31 @@ class PaperReadyPlots:
 
             # Fit Gaussian to absorption feature
             # Calculate the area under the Gaussian curves (A = sqrt(2π) * amp * width)
-            params = curve_fit(gaussian, wavelength_roi, flux_roi, p0=initial_guess)[0]
-            wave_endpoints = [wavelength_roi[0], wavelength_roi[-1]]
-            flux_endpoints = [flux_roi[0], flux_roi[-1]]
-            fit = np.polyfit(wave_endpoints, flux_endpoints, deg=1)
-            baseline = np.polyval(fit, wavelength_roi)
-            area = np.trapz(flux_roi - baseline, wavelength_roi)
-            flux_error = 0.02 * flux_roi
-            sigma_area = np.sqrt(np.sum((flux_error * (wavelength_roi[1] - wavelength_roi[0])) ** 2))
-            ew = area / np.mean(baseline)
-            baseline_error = np.std(flux_roi - baseline)
-            sigma_ew = ew * np.sqrt((sigma_area / area) ** 2 + (baseline_error / np.mean(baseline)) ** 2)
+            #params = curve_fit(gaussian, wavelength_roi, flux_roi, p0=initial_guess)[0]
+            #wave_endpoints = [wavelength_roi[0], wavelength_roi[-1]]
+            #flux_endpoints = [flux_roi[0], flux_roi[-1]]
+            #fit = np.polyfit(wave_endpoints, flux_endpoints, deg=1)
+            #baseline = np.polyval(fit, wavelength_roi)
+            #area = np.trapz(flux_roi - baseline, wavelength_roi)
+            #flux_error = 0.02 * flux_roi
+            #sigma_area = np.sqrt(np.sum((flux_error * (wavelength_roi[1] - wavelength_roi[0])) ** 2))
+            #ew = area / np.mean(baseline)
+            #baseline_error = np.std(flux_roi - baseline)
+            #sigma_ew = ew * np.sqrt((sigma_area / area) ** 2 + (baseline_error / np.mean(baseline)) ** 2)
             clean_name = re.sub(r'\d+', '', obj_name)
             #print(f'{clean_name} Equivalent Width: {ew:.5e}')
             #print(f'{clean_name} EW Sigma: {sigma_ew:.5e}')
-            print(f"{clean_name} & ${ew / 10 ** int(np.log10(abs(ew))):.2f}({int(round(sigma_ew / 10 ** int(np.log10(abs(ew))) * 100)):02d}) \\times 10^{{{int(np.log10(abs(ew)))}}}$ \\\\")
+            #print(f"{clean_name} & ${ew / 10 ** int(np.log10(abs(ew))):.2f}({int(round(sigma_ew / 10 ** int(np.log10(abs(ew))) * 100)):02d}) \\times 10^{{{int(np.log10(abs(ew)))}}}$ \\\\")
 
 
             plot_xlims = sorted(plot_xlims)
             xloc = plot_xlims[0] - ((plot_xlims[1] - plot_xlims[0]) * 0.01)
             flux_plot = flux[plot_mask]
             ax1.plot(wavelength_plot, flux_plot + offset, label=clean_name, color=colors[clean_name], linewidth=1.)
-            ax1.plot(wavelength_roi, baseline + offset, linestyle='--', color='red')
-            ax1.plot(wavelength_roi, gaussian(wavelength_roi, *params) + offset, color='teal', linestyle='--')
+            #ax1.plot(wavelength_roi, baseline + offset, linestyle='--', color='red')
+            #ax1.plot(wavelength_roi, gaussian(wavelength_roi, *params) + offset, color='teal', linestyle='--')
             ax1.text(xloc, flux_plot[0] + offset, clean_name.title(), verticalalignment='center',horizontalalignment='right')
-            ax1.hlines((flux_plot[0])+offset-0.025, xloc-ew, xloc, linewidth=1.2, color='black')
+            #ax1.hlines((flux_plot[0])+offset-0.025, xloc-ew, xloc, linewidth=1.2, color='black')
             offset += np.max(flux_plot)
             ax1 = plt.gca()  # Get current axis
             ax1.invert_xaxis()
@@ -857,15 +950,15 @@ class PaperReadyPlots:
     def ew_graph(self):
 
         band = [0.619, 0.727, 1.0, 1.2]
-        titan = [0.00216, 0.00687, 0.0405, 0.0841]
-        uranus = [0.00660, 0.00692, 0.0189, 0.0184]
-        neptune = [0.00981, 0.00536, 0.0168, 0.0125]
-        saturn = [0.00158, 0.00734, 0.0288, 0.0626]
+        titan = [0.00102, 0.00580, 0.01410, 0.01197]
+        uranus = [0.01189, 0.01261, 0.01907, 0.00336]
+        neptune = [0.01307, 0.00809, 0.01083, 0.00230]
+        saturn = [0.00198, 0.00484, 0.02403, 0.01846]
 
-        titan_err = [0.00009, 0.00032, 0.0018, 0.0072]
-        uranus_err = [0.00033, 0.00072, 0.0014, 0.0019]
-        neptune_err = [0.00067, 0.00087, 0.0021, 0.0015]
-        saturn_err = [0.00006, 0.00024, 0.0008, 0.0021]
+        titan_err = [0.00004, 0.00013, 0.00023, 0.00040]
+        uranus_err = [0.00056, 0.00082, 0.00145, 0.00005]
+        neptune_err = [0.00078, 0.00102, 0.00090, 0.00004]
+        saturn_err = [0.00009, 0.00021, 0.00224, 0.00104]
 
         values = {'saturn':saturn, 'titan':titan, 'neptune':neptune, 'uranus':uranus}
         errors = {'saturn':saturn_err, 'titan':titan_err, 'neptune':neptune_err, 'uranus':uranus_err}
@@ -883,106 +976,12 @@ class PaperReadyPlots:
         plt.ylabel('Equivalent Width (µm)', fontsize=16)
         plt.grid()
         plt.legend()
-        plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\EWs.png')
+        plt.savefig(f'C:\\Users\\ninam\\Documents\\Chile_Stuff\\Dissertation\\EWs.png')
         plt.show()
 
 
 # Define presets as dictionaries
 presets = {
-    'NIR': {
-        'bodies': ['neptune', 'uranus', 'saturn'],
-        'molecules': ['ch4', 'nh3'],
-        'xlims': (1.5, 2.0),
-        'offset': 0.05,
-        'ylims': (0.0, 0.65),
-        'threshold': 0.01,
-        'tolerance': 0.00001,
-        'solar': True,
-        'solar_scale': 1.0,
-        'scaling_factor': 0.1,
-        'show_model': True
-    },
-    'MID': {
-        'bodies': ['titan'],
-        'molecules': ['ch4'],
-        #'xlims': (1.57, 1.53),
-        'xlims': (1.53, 1.57),
-        'offset': 0.05,
-        'ylims': (0.0, 0.55),
-        #'ylims': (-0.02,0.1),
-        'threshold': 0.1,
-        'tolerance': 0.0001,
-        'solar': True,
-        'solar_scale': 1.0,
-        'scaling_factor': 0.1,
-        'show_model':False
-    },
-    'VIS': {
-        'bodies': ['neptune', 'uranus', 'saturn',],
-        'molecules': ['ch4', 'nh3'],
-        'xlims': (0.52, 0.63),
-        'offset': 0.8,
-        'ylims': (0.0, 1.25),
-        'threshold': 0.20,
-        'tolerance': 0.00001,
-        'solar': True,
-        'solar_scale': 15.0,
-        'scaling_factor': 0.3,
-        'show_model': False,
-        #'model_file': 'C:\\Users\\ninam\\Documents\\Chile Stuff\\Dissertation\\Elements\\planetary_atmosphere_model.fits',
-    },
-    'UVB': {
-        'bodies': ['neptune', 'uranus', 'saturn'],
-        'molecules': ['ch4'],
-        'xlims': (0.40, 0.45),
-        'offset': 0.8,
-        'ylims': (0.0, 2.1),
-        'threshold': 0.20,
-        'tolerance': 0.0001,
-        'solar': True,
-        'solar_scale': 5.0,
-        'scaling_factor': 0.3,
-        'show_model': True
-    },
-    'Neptune IR': {
-        'bodies': ['neptune1', 'neptune2', 'neptune'],
-        'molecules': ['ch4'],
-        'xlims': (1.5, 1.6),
-        'offset': 0.8,
-        'ylims': (0.01,0.1),
-        'threshold': 0.20,
-        'tolerance': 0.0001,
-        'solar': False,
-        'solar_scale': 5.0,
-        'scaling_factor': 0.3,
-        'show_model': False
-    },
-    'Uranus IR': {
-        'bodies': ['uranus1', 'uranus2', 'uranus3', 'uranus4', 'uranus'],
-        'molecules': ['ch4'],
-        'xlims': (1.57, 1.54),
-        'offset': 0.8,
-        'ylims': (0.0,0.6),
-        'threshold': 0.20,
-        'tolerance': 0.0001,
-        'solar': False,
-        'solar_scale': 5.0,
-        'scaling_factor': 0.3,
-        'show_model': False
-    },
-    'Saturn IR': {
-        'bodies': ['saturn', 'saturn5', 'saturn6', 'saturn9', 'saturn10', 'saturn11', 'saturn12'],
-        'molecules': ['ch4'],
-        'xlims': (1.57, 1.54),
-        'offset': 0.8,
-        'ylims': (0.0, 1.25),
-        'threshold': 0.20,
-        'tolerance': 0.0001,
-        'solar': False,
-        'solar_scale': 5.0,
-        'scaling_factor': 0.3,
-        'show_model': False
-    },
     'HydSulf': {
         'bodies': ['uranus1', 'neptune1', 'saturn5', 'titan'],
         'molecules': [],
@@ -991,18 +990,73 @@ presets = {
         'ylims': (-0.06, 0.025)
     },
     'Full Specs': {
-        'bodies': ['saturn5', 'titan', 'uranus1', 'neptune1'],
-        'molecules': ['H2O', 'CO2', 'O3', 'N2O', 'CO', 'CH4', 'NO', 'SO2', 'NO2',
-                      'NH3', 'OH', 'HF', 'HCl', 'HBr', 'HI', 'OCS', 'N2', 'HCN', 'PH3',
-                      'SF6', 'HO2'],
+        'bodies': ['titan', 'saturn', 'uranus', 'neptune'],
+        'molecules': [],
         'xlims': (0.31, 2.1),
+        #'xlims': (1.2, 1.35),
         'offset': 0.8,
-        'ylims': (0.0, 0.8),
+        'ylims': (0.0, 1.4),
         'threshold': 0.20,
         'tolerance': 0.0001,
         'solar': True,
         'solar_scale': 5.0,
-        'scaling_factor': 0.3,
+        'scaling_factor': 0.5,
+        'show_model': False,
+        'step_size': 1.0,
+    },
+    'neptune': {
+        'bodies': ['neptune'],
+        'molecules': [],
+        'xlims': (0.31, 2.1),
+        'offset': 0.8,
+        'ylims': (0.0, 1.e-12),
+        'threshold': 0.20,
+        'tolerance': 0.0001,
+        'solar': True,
+        'solar_scale': 5.0,
+        'scaling_factor': 0.5,
+        'show_model': False,
+        'step_size': 1.0,
+    },
+    'titan': {
+        'bodies': ['titan'],
+        'molecules': [],
+        'xlims': (0.31, 2.1),
+        'offset': 0.8,
+        'ylims': (0.0, 1.e-12),
+        'threshold': 0.20,
+        'tolerance': 0.0001,
+        'solar': True,
+        'solar_scale': 5.0,
+        'scaling_factor': 0.5,
+        'show_model': False,
+        'step_size': 1.0,
+    },
+    'saturn': {
+        'bodies': ['saturn'],
+        'molecules': [],
+        'xlims': (0.31, 2.1),
+        'offset': 0.8,
+        'ylims': (0.0, 1.e-12),
+        'threshold': 0.20,
+        'tolerance': 0.0001,
+        'solar': True,
+        'solar_scale': 5.0,
+        'scaling_factor': 0.5,
+        'show_model': False,
+        'step_size': 1.0,
+    },
+    'tisat': {
+        'bodies': ['titan','saturn'],
+        'molecules': [],
+        'xlims': (0.31, 2.1),
+        'offset': 0.8,
+        'ylims': (0.0, 1.e-12),
+        'threshold': 0.20,
+        'tolerance': 0.0001,
+        'solar': True,
+        'solar_scale': 5.0,
+        'scaling_factor': 0.5,
         'show_model': False,
         'step_size': 1.0,
     },
@@ -1018,20 +1072,6 @@ presets = {
         'solar_scale': 1.0,
         'scaling_factor': 0.1,
         'show_model': False
-    },
-    'Titan': {
-        'bodies': ['titan'],
-        'molecules': ['ch4'],
-        'xlims': (1.4, 1.71),
-        'offset': 0.5,
-        'ylims': (0.0, 0.8),
-        'threshold': 0.00001,
-        'tolerance': 0.3,
-        'solar': False,
-        'solar_scale': 1.0,
-        'scaling_factor': 0.1,
-        'show_model': True,
-        'emission_threshold': 0.1
     },
     'band_test': {
         'bodies': ['Saturn5', 'Titan'],
@@ -1057,47 +1097,48 @@ presets = {
         'step_size': 1.0,
     },
     '3nu2': {
-        'bodies': ['saturn5', 'titan', 'uranus1', 'neptune1'],
+        'bodies': ['saturn', 'titan', 'uranus', 'neptune'],
         'xlims': (1.5552, 1.5565),
-        'plot_xlims': (1.55, 1.56)
+        #'plot_xlims': (1.55, 1.56)
+        'plot_xlims': (1.50, 1.60)
     },
     'Methane-0.54': {
-        'bodies': ['titan', 'uranus1', 'neptune1', 'saturn5'],
+        'bodies': ['titan', 'uranus', 'neptune', 'saturn'],
         'xlims': (0.537, 0.55),
         'plot_xlims': (0.52, 0.57)
     },
     'Methane-0.619': {
-        'bodies': ['titan', 'uranus1', 'neptune1', 'saturn5'],
+        'bodies': ['titan', 'uranus', 'neptune', 'saturn'],
         'xlims': (0.606, 0.63),
         'plot_xlims': (0.60, 0.64)
     },
     'Methane-0.727': {
-        'bodies': ['titan', 'uranus1', 'neptune1', 'saturn5'],
+        'bodies': ['titan', 'uranus', 'neptune', 'saturn'],
         'xlims': (0.715, 0.74),
         'plot_xlims': (0.71, 0.75)
     },
     'Methane-1': {
-        'bodies': ['titan', 'uranus1', 'neptune1', 'saturn5'],
+        'bodies': ['titan', 'uranus', 'neptune', 'saturn'],
         'xlims': (0.94, 1.075),
         'plot_xlims': (0.937, 1.08)
     },
     'Methane-1.2': {
-        'bodies': ['titan', 'uranus1', 'neptune1', 'saturn5'],
+        'bodies': ['titan', 'uranus', 'neptune', 'saturn'],
         'xlims': (1.08, 1.28),
         'plot_xlims': (1.065, 1.3)
     },
     'Ammonia': {
-        'bodies': ['saturn5', 'titan', 'uranus1', 'neptune1'],
+        'bodies': ['saturn', 'titan', 'uranus', 'neptune'],
         'xlims': (1.558, 1.574),
         'plot_xlims': (1.555, 1.58)
     },
     'Ammonia-2': {
-        'bodies': ['titan', 'saturn5', 'uranus1', 'neptune1'],
+        'bodies': ['titan', 'saturn', 'uranus', 'neptune'],
         'xlims': (1.925, 2.025),
         'plot_xlims': (1.923, 2.05)
     },
     'OH': {
-        'bodies': ['titan', 'saturn5', 'uranus1', 'neptune1'],
+        'bodies': ['titan', 'saturn', 'uranus', 'neptune'],
         'xlims': (0.61, 0.63),
         'plot_xlims': (0.59, 0.64)
         #'xlims': (0.6175, 0.6265),
@@ -1105,12 +1146,12 @@ presets = {
 
     },
     'EWs': {
-        'bodies': ['titan', 'saturn5', 'uranus1', 'neptune1'],
+        'bodies': ['titan', 'saturn', 'uranus', 'neptune'],
 
     },
 }
 
-selected_preset = ('HydSulf')
+selected_preset = ('Full Specs')
 
 if __name__ == "__main__":
     params = presets[selected_preset]
